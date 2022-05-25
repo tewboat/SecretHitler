@@ -1,26 +1,24 @@
 const crypto = require('crypto');
-import Player from './player';
+const Player = require('./player.js');
 
 class Room{
-    currentPlayersCount = 0;
-    players = new Map;
+    players = new Map();
     clients = new Map();
 
-    constructor(roomName, maxPlayersCount) {
-        if (!this.validateName(roomName))
-            throw new Error('Incorrect room name');
+    constructor(password, maxPlayersCount) {
         this.id = crypto.randomUUID();
-        this.name = roomName;
         this.maxPlayersCount = maxPlayersCount;
+        this.password = password;
     }
 
     validateName(roomName){
         return roomName.length > 0;
     }
 
-    addPlayer(name, socket){
-        this.clients.set(socket.id, socket)
-        this.players.set(socket.id, new Player(name, socket.id))
+    addPlayer(username, socket){
+        this.clients.set(socket.id, socket);
+        this.players.set(socket.id, new Player(username));
+        return this.players.size - 1;
     }
 
     removePlayer(socketId) {
@@ -40,7 +38,12 @@ class Room{
         }
     }
 
-    update(){
+    notifyUsers(action){
+        for (let client of this.clients){
+            action(this.clients[client]);
 
+        }
     }
 }
+
+module.exports = Room

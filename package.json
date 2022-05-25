@@ -1,7 +1,15 @@
 {
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "express": "^4.17.3",
     "morgan": "^1.10.0",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "scripts": {
+    "serve": "nodemon server.js",
+    "start": "node server.js"
   }
 }
