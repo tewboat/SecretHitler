@@ -14,6 +14,7 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
+
 const server = http.createServer(app);
 const io = socketIO(server);
 
@@ -26,18 +27,27 @@ app.get('/', ((req, res) => {
 }))
 
 app.get('/enter', (req, res) => {
-    let roomUid = req.query.roomUid;
-    let room = rooms.get(roomUid);
-    //todo сгенерить и отправить темплэйт комнаты
-})
+    let id = req.query.id;
+    let room = rooms.get(id);
+    res.json(room);
+});
 
 app.post('/create', (req, res) => {
     let password = req.body.password;
     let maxPlayersCount = req.body.maxPlayersCount;
     let room = new Room(password, maxPlayersCount);
     rooms.set(room.id, room);
-    res.redirect(`http://localhost:${PORT}/enter`)
-})
+    console.log(room);
+    res.redirect(`http://localhost:${PORT}/enter?id=${room.id}`)
+});
+
+app.get('/find', ((req, res) => {
+    const result = [];
+    for (let room of rooms){
+        result.push(room);
+    }
+    res.json(result);
+}));
 
 io.on('connection', (socket) => {
     socket.on('onJoin', (data) => {
