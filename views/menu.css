@@ -19,6 +19,6 @@ body{
     box-sizing: border-box;
 }
 
-.container input[type='button']{
+.container .next-button{
     margin-top: 25%;
 }
