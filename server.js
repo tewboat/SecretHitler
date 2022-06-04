@@ -67,20 +67,33 @@ app.get('/api/getAllRooms', (req, res) => {
     res.json(result);
 })
 
-app.get('/enter', (req, res) => {
+app.get('/api/enter', (req, res) => {
     let id = req.query.id;
     let room = rooms.get(id);
+    console.log(room);
     res.json(room);
+    // TODO отправка комнаты
 });
 
-app.post('/api/create', (req, res) => {
-    let password = req.body.password;
-    let maxPlayersCount = req.body.maxPlayersCount;
-    let room = new Room(password, maxPlayersCount);
+app.post('/api/createRoom', (req, res) => {
+    const payload = req.body.payload;
+    const name = payload.name;
+    const password = payload.password;
+    const playersCount = payload.playersCount;
+
+    // TODO validate
+    // TODO сохранять имя
+
+    let room = new Room(password, playersCount);
     rooms.set(room.id, room);
     console.log(room);
-    res.sendStatus(200);
-    //res.redirect(`http://localhost:${PORT}/enter?id=${room.id}`)
+
+    res.json({
+        type: 'confirm',
+        payload: {
+            id: room.id
+        }
+    });
 });
 
 io.on('connection', (socket) => {

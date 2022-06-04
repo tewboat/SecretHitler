@@ -9,7 +9,7 @@ class LawDecks{
     }
 
     generateDeck(){
-        // mb need some numbers to deck;
+        // TODO mb need some numbers to deck;
         for(let i = 0; i < 11; i++){
             this.mainDeck.push(new Card(Party.Fascist));
         }
