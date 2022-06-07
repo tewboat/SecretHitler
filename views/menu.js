@@ -94,9 +94,7 @@ enterBtn.addEventListener('click', async _ => {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
-            type: 'info', payload: {
                 nickname: nicknameInput.value
-            }
         })
     });
     if (response.status === 200) {
@@ -122,24 +120,21 @@ const createRoomBtn = states.roomCreationPage.querySelector('.create-room-button
 createRoomBtn.addEventListener('click', async _ => {
     const roomName = states.roomCreationPage.querySelector('.input-room-name').value;
     const playersCount = states.roomCreationPage.querySelector('.input-player-count').value;
-    const password = states.roomCreationPage.querySelector('.input-password').value;
+    const password = states.roomCreationPage.querySelector('.input-password')?.value;
 
     let response = await fetch('http://localhost:3000/api/createRoom', {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
-            type: 'create room', payload: {
                 name: roomName,
                 playersCount: playersCount,
                 password: password
-            }
         })
     });
 
     if (response.status === 200) {
         const message = await response.json()
-        const id = message.payload.id;
-        window.location.replace(`http://localhost:3000/api/enter?id=${id}`)
+        window.location.replace(`http://localhost:3000/enter?id=${message.id}`)
     } else {
         // TODO вывести сообщение, что все хуево
     }
