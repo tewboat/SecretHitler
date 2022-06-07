@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
 })
 
 app.post('/api/setName', (req, res) => {
-    let nickname = escape(String(req.body.payload.nickname));
+    let nickname = escape(String(req.body.nickname));
     if (validateNickname(nickname)) {
         res.cookie('nickname', nickname);
         res.sendStatus(200);
@@ -62,7 +62,7 @@ app.post('/api/setName', (req, res) => {
 app.get('/api/getAllRooms', (req, res) => {
     const result = []
     rooms.forEach((value, key) => {
-        result.push({uid: key, name: value.name})
+        result.push({uid: key, name: value.name, password: value.password !== undefined})
     })
     res.json(result);
 })
@@ -70,17 +70,25 @@ app.get('/api/getAllRooms', (req, res) => {
 app.get('/enter', (req, res) => {
     let id = req.query.id;
     let room = rooms.get(id);
+    console.log(room);
     res.json(room);
+    // TODO отправка комнаты
 });
 
-app.post('/api/create', (req, res) => {
-    let password = req.body.password;
-    let maxPlayersCount = req.body.maxPlayersCount;
-    let room = new Room(password, maxPlayersCount);
+app.post('/api/createRoom', (req, res) => {
+    const name = escape(req.body.name);
+    const password = req.body.password;
+    const playersCount = Number(req.body.playersCount);
+
+    // TODO validate
+    // TODO сохранять имя
+
+    let room = new Room(password, playersCount);
     rooms.set(room.id, room);
-    console.log(room);
-    res.sendStatus(200);
-    //res.redirect(`http://localhost:${PORT}/enter?id=${room.id}`)
+
+    res.json({
+            id: room.id
+    });
 });
 
 io.on('connection', (socket) => {
