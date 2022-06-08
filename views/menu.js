@@ -83,6 +83,39 @@ function getRoomCreationPage() {
     return div;
 }
 
+function createListItem(name, password, playersCount, maxPlayersCount){
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '<img>' : ''}`;
+    return listItem;
+}
+
+async function getListOfRooms(){
+    const ul = document.createElement('ul');
+    const response = await fetch('http://localhost:3000/api/getAllRooms');
+    const rooms = await response.json();
+    for (let room of rooms){
+        const listItem = createListItem(room.name, room.password, room.playersCount, room.maxPlayersCount);
+        listItem.addEventListener('click', _ => {
+            window.location.replace(`http://localhost:3000/enter?id=${room.id}`)
+        });
+        ul.appendChild(listItem);
+    }
+    return ul;
+}
+
+async function getListOfRoomsPage() {
+    const div = document.createElement('div');
+    div.classList.add('container');
+    div.appendChild(await getListOfRooms());
+    const updateButton = createButton('Обновить', 'update-button');
+    div.appendChild(updateButton);
+    updateButton.addEventListener('click', async _ => {
+        const list = div.querySelector('ul');
+        div.replaceChild(await getListOfRooms(), list);
+    })
+    return div;
+}
+
 const states = {
     loginPage: document.querySelector('.container'),
     menuPage: getMenuPage(),
@@ -104,11 +137,14 @@ enterBtn.addEventListener('click', async _ => {
     }
 })
 
+// TODO добавить кнопку "Назад"
+
 const findBtn = states.menuPage.querySelector('.find-button');
 const createBtn = states.menuPage.querySelector('.create-button');
 
-findBtn.addEventListener('click', _ => {
-    // TODO запрос всех комнат и переход к соответствующей странице
+findBtn.addEventListener('click', async _ => {
+    const state = await getListOfRoomsPage();
+    changeState(states.menuPage, state);
 })
 
 createBtn.addEventListener('click', _ => {
@@ -133,8 +169,8 @@ createRoomBtn.addEventListener('click', async _ => {
     });
 
     if (response.status === 200) {
-        const message = await response.json()
-        window.location.replace(`http://localhost:3000/enter?id=${message.id}`)
+        const message = await response.json();
+        window.location.replace(`http://localhost:3000/enter?id=${message.id}`);
     } else {
         // TODO вывести сообщение, что все хуево
     }

@@ -62,7 +62,13 @@ app.post('/api/setName', (req, res) => {
 app.get('/api/getAllRooms', (req, res) => {
     const result = []
     rooms.forEach((value, key) => {
-        result.push({uid: key, name: value.name, password: value.password !== undefined})
+        result.push({
+            id: key,
+            name: value.name,
+            password: value.password !== undefined,
+            playersCount: value.players.size,
+            maxPlayersCount: value.maxPlayersCount
+        })
     })
     res.json(result);
 })
@@ -78,12 +84,11 @@ app.get('/enter', (req, res) => {
 app.post('/api/createRoom', (req, res) => {
     const name = escape(req.body.name);
     const password = req.body.password;
-    const playersCount = Number(req.body.playersCount);
+    const maxPlayersCount = Number(req.body.maxPlayersCount);
 
     // TODO validate
-    // TODO сохранять имя
 
-    let room = new Room(password, playersCount);
+    let room = new Room(name, password, maxPlayersCount);
     rooms.set(room.id, room);
 
     res.json({
