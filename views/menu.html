@@ -6,11 +6,15 @@
     <link rel="stylesheet" href="menu.css">
 </head>
 <body>
+<img class="banner" src="images/secret-hitler-banner.jpg" alt="main-banner">
 <div class='container'>
-    <label><p>Ваше имя</p>
-        <input class="nickname-input" type="text" minlength="1" maxlength="15">
-    </label>
-    <p><input class="next-button enter-button" type="button" value="Вход"></p>
+    <form>
+        <div class="input-container">
+            <input class="nickname-input" type="text" minlength="1" maxlength="15" value="Ваше имя" required>
+            <label> Ваше имя:</label>
+        </div>
+        <input class="next-button enter-button" type="button" value="Войти">
+    </form>
 </div>
 
 <script src="menu.js"></script>
