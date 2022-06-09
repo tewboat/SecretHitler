@@ -5,8 +5,8 @@ class Room{
     players = new Map();
     clients = new Map();
 
-    constructor(password, maxPlayersCount) {
-        this.name = 'Test name';
+    constructor(name, password, maxPlayersCount) {
+        this.name = name;
         this.id = crypto.randomUUID();
         this.maxPlayersCount = maxPlayersCount;
         this.password = password;

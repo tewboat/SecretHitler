@@ -16,17 +16,6 @@ function changeState(currentState, nextState) {
     document.body.appendChild(nextState);
 }
 
-// function createInputWithLabel(labelText, inputType) {
-//     const label = document.createElement('label');
-//     const p = document.createElement('p');
-//     p.innerText = labelText;
-//     label.appendChild(p);
-//     const input = document.createElement('input');
-//     input.type = inputType;
-//     label.appendChild(input);
-//     return [label, input];
-// }
-
 function createInputWithLabel(labelText, inputType) {
     const label = document.createElement('label');
     label.innerHTML = labelText;
@@ -60,17 +49,6 @@ function getMenuPage() {
     div.appendChild(createBtn);
     return div;
 }
-
-// function getContainer(containers) {
-//     let div = document.createElement('div');
-//     div.classList.add('container');
-//     let form = document.createElement('form');
-//     div.appendChild(form);
-//     for (const container of containers) {
-//         form.appendChild(container);
-//     }
-//     return div;
-// }
 
 function getRoomCreationPage() {
     const div = document.createElement('div');
@@ -115,44 +93,38 @@ function getRoomCreationPage() {
     return div;
 }
 
+function createListItem(name, password, playersCount, maxPlayersCount){
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '<img>' : ''}`;
+    return listItem;
+}
 
-// function getRoomCreationPage() {
-//     const div = document.createElement('div');
-//     div.classList.add('container');
-//     const [inputRoomNameLabel, inputRoomName] = createInputWithLabel('Название комнаты', 'text');
-//     inputRoomName.classList.add('input-room-name');
-//     inputRoomName.minLength = 1;
-//     inputRoomName.maxLength = 15;
-//     div.appendChild(inputRoomNameLabel);
-//     const [inputPlayerCountLabel, inputPlayerCount] = createInputWithLabel('Количество игроков (5 - 10)', 'number');
-//     inputPlayerCount.classList.add('input-player-count');
-//     inputPlayerCount.addEventListener('input', _ => {
-//         const value = Number(inputPlayerCount.value)
-//         if (value < 0) {
-//             inputPlayerCount.value = String(0);
-//         } else if (value > 10) {
-//             inputPlayerCount.value = String(10);
-//         } // TODO продумать ограничение
-//     });
-//     div.appendChild(inputPlayerCountLabel);
-//     const [inputSetPasswordLabel, inputSetPassword] = createInputWithLabel('Вход по паролю', 'checkbox');
-//     inputSetPassword.classList.add('input-set-password');
-//     div.appendChild(inputSetPasswordLabel);
-//     const [inputPasswordLabel, inputPassword] = createInputWithLabel('Пароль', 'password');
-//     inputPassword.classList.add('input-password');
-//     inputPassword.minLength = 4;
-//     inputPassword.maxLength = 16;
-//     inputSetPassword.addEventListener('change', _ => {
-//         if (inputSetPassword.checked) {
-//             inputSetPasswordLabel.after(inputPasswordLabel);
-//         } else {
-//             div.removeChild(inputPasswordLabel);
-//         }
-//     });
-//     const button = createButton('Создать', 'create-room-button', 'next-button');
-//     div.appendChild(button);
-//     return div;
-// }
+async function getListOfRooms(){
+    const ul = document.createElement('ul');
+    const response = await fetch('http://localhost:3000/api/getAllRooms');
+    const rooms = await response.json();
+    for (let room of rooms){
+        const listItem = createListItem(room.name, room.password, room.playersCount, room.maxPlayersCount);
+        listItem.addEventListener('click', _ => {
+            window.location.replace(`http://localhost:3000/enter?id=${room.id}`)
+        });
+        ul.appendChild(listItem);
+    }
+    return ul;
+}
+
+async function getListOfRoomsPage() {
+    const div = document.createElement('div');
+    div.classList.add('container');
+    div.appendChild(await getListOfRooms());
+    const updateButton = createButton('Обновить', 'update-button');
+    div.appendChild(updateButton);
+    updateButton.addEventListener('click', async _ => {
+        const list = div.querySelector('ul');
+        div.replaceChild(await getListOfRooms(), list);
+    })
+    return div;
+}
 
 const states = {
     loginPage: document.querySelector('.container'),
@@ -175,11 +147,14 @@ enterBtn.addEventListener('click', async _ => {
     }
 })
 
+// TODO добавить кнопку "Назад"
+
 const findBtn = states.menuPage.querySelector('.find-button');
 const createBtn = states.menuPage.querySelector('.create-button');
 
-findBtn.addEventListener('click', _ => {
-    // TODO запрос всех комнат и переход к соответствующей странице
+findBtn.addEventListener('click', async _ => {
+    const state = await getListOfRoomsPage();
+    changeState(states.menuPage, state);
 })
 
 createBtn.addEventListener('click', _ => {
@@ -204,8 +179,8 @@ createRoomBtn.addEventListener('click', async _ => {
     });
 
     if (response.status === 200) {
-        const message = await response.json()
-        window.location.replace(`http://localhost:3000/enter?id=${message.id}`)
+        const message = await response.json();
+        window.location.replace(`http://localhost:3000/enter?id=${message.id}`);
     } else {
         // TODO вывести сообщение, что все хуево
     }
