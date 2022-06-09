@@ -15,7 +15,7 @@ body {
     /*background-color: #343231;*/
     background: linear-gradient(#535063, #343231);
     border-radius: 3px;
-    padding: 70px 100px;
+    padding: 50px 70px;
     margin-top: 50px;
     justify-content: space-between;
 }
@@ -88,9 +88,19 @@ body {
     font-size: 12px;
 }
 
+.input-container:valid {
+    top: -12px;
+    font-size: 12px;
+}
+
 .banner {
     width: 100%;
     height: 350px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
 }
 
 .find-button, .create-button {
@@ -113,6 +123,20 @@ body {
 
 label {
     font-family: Tahoma serif;
+}
+
+.find-button, .create-button, .next-button, .enter-button {
+    box-shadow: 5px 5px #555555;
+    transition: 0.5s;
+}
+
+.find-button:hover, .create-button:hover, .next-button:hover, .enter-button:hover {
+    box-shadow: 3px 3px #555555;
+    transition: 0.5s;
+}
+
+.find-button:active, .create-button:active, .next-button:active, .enter-button:active {
+    box-shadow: 1px 1px #555555;
 }
 
 /*.input-player-count, .input-set-password, .input-room-name, .input-password, .create-room-button {*/

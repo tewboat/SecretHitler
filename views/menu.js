@@ -101,7 +101,7 @@ function getRoomCreationPage() {
     form.appendChild(createContainer(inputSetPassword, inputSetPasswordLabel));
     const [inputPasswordLabel, inputPassword] = createInputWithLabel('Пароль', 'password');
     inputPassword.classList.add('input-password');
-    inputPassword.minLength = 4;
+    inputPassword.minLength = 4; // возможно ввести пароль из менее чем 4 символов:(
     inputPassword.maxLength = 16;
     inputSetPassword.addEventListener('change', _ => {
         if (inputSetPassword.checked) {
