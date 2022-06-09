@@ -86,12 +86,21 @@ app.post('/enter', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'room.html'));
 });
 
+function validateRoomParameters(name, password, playersCount){
+    return name !== undefined && 1 <= name.size <= 16
+    && !isNaN(playersCount) && 5 <= playersCount <= 10
+    && (password === undefined || 4 <= password.size <= 16);
+}
+
 app.post('/api/createRoom', (req, res) => {
     const name = escape(req.body.name);
     const password = req.body.password;
     const playersCount = Number(req.body.playersCount);
 
-    // TODO validate
+    if (!validateRoomParameters(name, password, playersCount)){
+        res.sendStatus(422);
+        return;
+    }
 
     let room = new Room(name, password, playersCount);
     rooms.set(room.id, room);
