@@ -93,20 +93,61 @@ function getRoomCreationPage() {
     return div;
 }
 
-function createListItem(name, password, playersCount, maxPlayersCount){
+function createListItem(name, password, playersCount, maxPlayersCount) {
     const listItem = document.createElement('li');
     listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '<img>' : ''}`;
     return listItem;
 }
 
-async function getListOfRooms(){
+async function getListOfRooms() {
     const ul = document.createElement('ul');
     const response = await fetch('http://localhost:3000/api/getAllRooms');
     const rooms = await response.json();
-    for (let room of rooms){
+
+    let lastClicked = null;
+
+    for (let room of rooms) {
         const listItem = createListItem(room.name, room.password, room.playersCount, room.maxPlayersCount);
         listItem.addEventListener('click', _ => {
-            window.location.replace(`http://localhost:3000/enter?id=${room.id}`)
+            if (lastClicked === listItem){
+                return;
+            }
+
+            if (lastClicked !== null) {
+                const toRemove = lastClicked.querySelector('.password-container');
+                lastClicked.removeChild(toRemove);
+            }
+
+            lastClicked = listItem;
+
+            const div = document.createElement('div');
+            div.classList.add('password-container');
+
+            if (room.password) {
+                const [passwordInputLabel, passwordInput] = createInputWithLabel('Пароль', 'password');
+                div.appendChild(passwordInputLabel);
+            }
+
+            const button = createButton('Войти', 'enter-room-button');
+            div.appendChild(button);
+            button.addEventListener('click', async _ => {
+                const response = await fetch('http://localhost:3000/enter', {
+                    method: 'POST', headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    }, body: JSON.stringify({
+                        id: room.id,
+                        password: div.querySelector('input')?.value
+                    })
+                });
+
+                if (response.status === 200) {
+                    const html = await response.text();
+                    document.write(html);
+                } else{
+                    // TODO обработать случай неправильного пароля
+                }
+            })
+            listItem.appendChild(div);
         });
         ul.appendChild(listItem);
     }
@@ -133,7 +174,7 @@ const states = {
 }
 
 enterBtn.addEventListener('click', async _ => {
-    let response = await fetch('http://localhost:3000/api/setName', {
+    const response = await fetch('http://localhost:3000/api/setName', {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
@@ -180,7 +221,16 @@ createRoomBtn.addEventListener('click', async _ => {
 
     if (response.status === 200) {
         const message = await response.json();
-        window.location.replace(`http://localhost:3000/enter?id=${message.id}`);
+        const html = await (await fetch('http://localhost:3000/enter', {
+            method: 'POST', headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                id: message.id,
+                password: password
+            })
+        })).text();
+        document.write(html);
     } else {
         // TODO вывести сообщение, что все хуево
     }

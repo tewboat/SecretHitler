@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const Player = require('./player.js');
 
-class Room{
+class Room {
     players = new Map();
     clients = new Map();
 
@@ -12,11 +12,15 @@ class Room{
         this.password = password;
     }
 
-    validateName(roomName){
+    isFull() {
+        return this.players.size === this.maxPlayersCount;
+    }
+
+    validateName(roomName) {
         return roomName.length > 0;
     }
 
-    addPlayer(username, socket){
+    addPlayer(username, socket) {
         this.clients.set(socket.id, socket);
         this.players.set(socket.id, new Player(username));
         return this.players.size - 1;
@@ -39,8 +43,8 @@ class Room{
         }
     }
 
-    notifyUsers(action){
-        for (let client of this.clients){
+    notifyUsers(action) {
+        for (let client of this.clients) {
             action(this.clients[client]);
 
         }
