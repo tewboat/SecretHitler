@@ -58,28 +58,24 @@ function getRoomCreationPage() {
     const [inputRoomNameLabel, inputRoomName] = createInputWithLabel('Название комнаты', 'text');
     inputRoomName.classList.add('input-room-name');
     inputRoomName.minLength = 1;
-    inputRoomName.maxLength = 15;
+    inputRoomName.maxLength = 16;
     form.appendChild(createContainer(inputRoomName, inputRoomNameLabel));
-    const [inputPlayerCountLabel, inputPlayerCount] = createInputWithLabel('Количество игроков (5 - 10)', 'number');
+    const [inputPlayerCountLabel, inputPlayerCount] = createInputWithLabel('', 'range');
     inputPlayerCount.classList.add('input-player-count');
-    // inputPlayerCount.value = '5';
     inputPlayerCount.min = '5';
     inputPlayerCount.max = '10';
-    // inputPlayerCount.addEventListener('input', _ => {
-    //     const value = Number(inputPlayerCount.value)
-    //     if (value < 0) {
-    //         inputPlayerCount.value = String(0);
-    //     } else if (value > 10) {
-    //         inputPlayerCount.value = String(10);
-    //     } // TODO продумать ограничение
-    // });
+    inputPlayerCountLabel.innerText = `Количество игроков: ${inputPlayerCount.value}`;
+
+    inputPlayerCount.addEventListener('change', _ => {
+        inputPlayerCountLabel.innerText = `Количество игроков: ${inputPlayerCount.value}`;
+    });
+
     form.appendChild(createContainer(inputPlayerCount, inputPlayerCountLabel));
     const [inputSetPasswordLabel, inputSetPassword] = createInputWithLabel('Вход по паролю', 'checkbox');
     inputSetPassword.classList.add('input-set-password');
     form.appendChild(createContainer(inputSetPassword, inputSetPasswordLabel));
     const [inputPasswordLabel, inputPassword] = createInputWithLabel('Пароль', 'password');
     inputPassword.classList.add('input-password');
-    inputPassword.minLength = 4; // возможно ввести пароль из менее чем 4 символов:(
     inputPassword.maxLength = 16;
     inputSetPassword.addEventListener('change', _ => {
         if (inputSetPassword.checked) {
@@ -95,7 +91,7 @@ function getRoomCreationPage() {
 
 function createListItem(name, password, playersCount, maxPlayersCount) {
     const listItem = document.createElement('li');
-    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '<img>' : ''}`;
+    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '<img>' : ''}`; // TODO замочек, если с паролем
     return listItem;
 }
 
@@ -109,7 +105,7 @@ async function getListOfRooms() {
     for (let room of rooms) {
         const listItem = createListItem(room.name, room.password, room.playersCount, room.maxPlayersCount);
         listItem.addEventListener('click', _ => {
-            if (lastClicked === listItem){
+            if (lastClicked === listItem) {
                 return;
             }
 
@@ -143,7 +139,7 @@ async function getListOfRooms() {
                 if (response.status === 200) {
                     const html = await response.text();
                     document.write(html);
-                } else{
+                } else {
                     // TODO обработать случай неправильного пароля
                 }
             })
@@ -205,9 +201,25 @@ createBtn.addEventListener('click', _ => {
 const createRoomBtn = states.roomCreationPage.querySelector('.create-room-button');
 
 createRoomBtn.addEventListener('click', async _ => {
-    const roomName = states.roomCreationPage.querySelector('.input-room-name').value;
-    const playersCount = states.roomCreationPage.querySelector('.input-player-count').value;
-    const password = states.roomCreationPage.querySelector('.input-password')?.value;
+    const roomName = document.querySelector('.input-room-name').value;
+    const playersCount = Number(document.querySelector('.input-player-count').value);
+    const password = document.querySelector('.input-password')?.value;
+
+    if (roomName.length < 1 || 16 < roomName.length) {
+        // TODO вывести сообщение о некорректном имени комнаты
+        return;
+    }
+
+    if (isNaN(playersCount) || playersCount < 5 || 10 < playersCount) {
+        // TODO вывести сообщение о некорректном количестве игроков
+        return;
+    }
+
+    if (password !== undefined && (password.length < 4 || 16 < password.length)) {
+        // TODO вывести сообщение о некорректном пароле
+        return;
+    }
+
 
     let response = await fetch('http://localhost:3000/api/createRoom', {
         method: 'POST', headers: {
@@ -232,6 +244,7 @@ createRoomBtn.addEventListener('click', async _ => {
         })).text();
         document.write(html);
     } else {
-        // TODO вывести сообщение, что все хуево
+        console.log('все плохо');
+        // TODO вывести сообщение, что все плохо
     }
 })
