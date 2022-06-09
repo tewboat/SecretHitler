@@ -73,27 +73,30 @@ app.get('/api/getAllRooms', (req, res) => {
     res.json(result);
 })
 
-app.get('/enter', (req, res) => {
-    let id = req.query.id;
-    let room = rooms.get(id);
-    console.log(room);
-    res.json(room);
-    // TODO отправка комнаты
+app.post('/enter', (req, res) => {
+    const id = req.body.id;
+    const password = req.body.password;
+
+    const room = rooms.get(id);
+
+    if (password !== room.password || room.isFull()){
+        res.status(403);
+    }
+
+    res.sendFile(path.join(__dirname, 'views', 'room.html'));
 });
 
 app.post('/api/createRoom', (req, res) => {
     const name = escape(req.body.name);
     const password = req.body.password;
-    const maxPlayersCount = Number(req.body.maxPlayersCount);
+    const playersCount = Number(req.body.playersCount);
 
     // TODO validate
 
-    let room = new Room(name, password, maxPlayersCount);
+    let room = new Room(name, password, playersCount);
     rooms.set(room.id, room);
 
-    res.json({
-            id: room.id
-    });
+    res.json({id: room.id});
 });
 
 io.on('connection', (socket) => {
