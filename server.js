@@ -83,7 +83,10 @@ app.post('/enter', (req, res) => {
         res.status(403);
     }
 
-    res.sendFile(path.join(__dirname, 'views', 'room.html'));
+    res.sendFile(path.join(__dirname, 'views', '' +
+        '' +
+        '' +
+        'game.html'));
 });
 
 function validateRoomParameters(name, password, playersCount){
