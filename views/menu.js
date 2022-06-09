@@ -18,13 +18,18 @@ function changeState(currentState, nextState) {
 
 function createInputWithLabel(labelText, inputType) {
     const label = document.createElement('label');
-    const p = document.createElement('p');
-    p.innerText = labelText;
-    label.appendChild(p);
+    label.innerHTML = labelText;
     const input = document.createElement('input');
     input.type = inputType;
-    label.appendChild(input);
     return [label, input];
+}
+
+function createContainer(input, label) {
+    const div = document.createElement('div');
+    div.classList.add('input-container');
+    div.appendChild(input);
+    div.appendChild(label);
+    return div;
 }
 
 function createButton(text, ...classes) {
@@ -48,38 +53,43 @@ function getMenuPage() {
 function getRoomCreationPage() {
     const div = document.createElement('div');
     div.classList.add('container');
+    const form = document.createElement('form');
+    div.appendChild(form);
     const [inputRoomNameLabel, inputRoomName] = createInputWithLabel('Название комнаты', 'text');
     inputRoomName.classList.add('input-room-name');
     inputRoomName.minLength = 1;
     inputRoomName.maxLength = 15;
-    div.appendChild(inputRoomNameLabel);
+    form.appendChild(createContainer(inputRoomName, inputRoomNameLabel));
     const [inputPlayerCountLabel, inputPlayerCount] = createInputWithLabel('Количество игроков (5 - 10)', 'number');
     inputPlayerCount.classList.add('input-player-count');
-    inputPlayerCount.addEventListener('input', _ => {
-        const value = Number(inputPlayerCount.value)
-        if (value < 0) {
-            inputPlayerCount.value = String(0);
-        } else if (value > 10) {
-            inputPlayerCount.value = String(10);
-        } // TODO продумать ограничение
-    });
-    div.appendChild(inputPlayerCountLabel);
+    // inputPlayerCount.value = '5';
+    inputPlayerCount.min = '5';
+    inputPlayerCount.max = '10';
+    // inputPlayerCount.addEventListener('input', _ => {
+    //     const value = Number(inputPlayerCount.value)
+    //     if (value < 0) {
+    //         inputPlayerCount.value = String(0);
+    //     } else if (value > 10) {
+    //         inputPlayerCount.value = String(10);
+    //     } // TODO продумать ограничение
+    // });
+    form.appendChild(createContainer(inputPlayerCount, inputPlayerCountLabel));
     const [inputSetPasswordLabel, inputSetPassword] = createInputWithLabel('Вход по паролю', 'checkbox');
     inputSetPassword.classList.add('input-set-password');
-    div.appendChild(inputSetPasswordLabel);
+    form.appendChild(createContainer(inputSetPassword, inputSetPasswordLabel));
     const [inputPasswordLabel, inputPassword] = createInputWithLabel('Пароль', 'password');
     inputPassword.classList.add('input-password');
-    inputPassword.minLength = 4;
+    inputPassword.minLength = 4; // возможно ввести пароль из менее чем 4 символов:(
     inputPassword.maxLength = 16;
     inputSetPassword.addEventListener('change', _ => {
         if (inputSetPassword.checked) {
-            inputSetPasswordLabel.after(inputPasswordLabel);
+            button.before(createContainer(inputPassword, inputPasswordLabel));
         } else {
-            div.removeChild(inputPasswordLabel);
+            form.removeChild(form.children[3]);
         }
     });
     const button = createButton('Создать', 'create-room-button', 'next-button');
-    div.appendChild(button);
+    form.appendChild(button);
     return div;
 }
 
@@ -127,7 +137,7 @@ enterBtn.addEventListener('click', async _ => {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
-                nickname: nicknameInput.value
+            nickname: nicknameInput.value
         })
     });
     if (response.status === 200) {
@@ -162,9 +172,9 @@ createRoomBtn.addEventListener('click', async _ => {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
-                name: roomName,
-                playersCount: playersCount,
-                password: password
+            name: roomName,
+            playersCount: playersCount,
+            password: password
         })
     });
 
