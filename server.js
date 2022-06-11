@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const socketIO = require('socket.io');
+const { Server } = require('socket.io');
 const Room = require('./domain/room.js');
 const cookieParser = require('cookie-parser');
 const path = require("path");
@@ -23,12 +23,12 @@ app.use(express.static(path.join(process.cwd(), "views")));
 app.use(redirectToLoginPage);
 
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = new Server(server);
 const rooms = new Map(); // map<uid, room>
 
 function validateNickname(nickname) {
-    const nicknameMaxLength = 15;
-    return 0 < nickname.length < nicknameMaxLength; // TODO сделать проверку уникальности
+    const nicknameMaxLength = 16;
+    return 0 < nickname.length && nickname.length < nicknameMaxLength;
 }
 
 function escape(string) {
@@ -83,16 +83,13 @@ app.post('/enter', (req, res) => {
         res.status(403);
     }
 
-    res.sendFile(path.join(__dirname, 'views', '' +
-        '' +
-        '' +
-        'game.html'));
+    res.sendFile(path.join(__dirname, 'views', 'game.html'));
 });
 
 function validateRoomParameters(name, password, playersCount){
-    return name !== undefined && 1 <= name.size <= 16
+    return name !== undefined && 1 <= name.length <= 16
     && !isNaN(playersCount) && 5 <= playersCount <= 10
-    && (password === undefined || 4 <= password.size <= 16);
+    && (password === undefined || password === null || 4 <= password.length <= 16);
 }
 
 app.post('/api/createRoom', (req, res) => {
@@ -111,27 +108,12 @@ app.post('/api/createRoom', (req, res) => {
     res.json({id: room.id});
 });
 
-io.on('connection', (socket) => {
-    socket.on('onJoin', (data) => {
-        let roomUid = data.roomUid;
-        let room = rooms.get(roomUid);
-        if (room === undefined) {
-            socket.emit('onError', {
-                message: "No room with such uid."
-            });
-            socket.disconnect();
-            return;
-        }
-        let name = data.username;
-
-        let pos = room.addPlayer(name, socket);
-        room.notifyUsers(function (userSock) {
-            userSock.emit('onUserJoined', {
-                username: name,
-                position: pos
-            });
-        });
-    });
+io.on('connection', (ws) => {
+    console.log(ws.handshake.query.id);
+    ws.on('joinRoom', msg => {
+        console.log('joined');
+        // TODO send updated list of players
+    })
 });
 
 

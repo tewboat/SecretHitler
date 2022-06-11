@@ -1,4 +1,3 @@
-const enterBtn = document.querySelector('.enter-button');
 const nicknameInput = document.querySelector('.nickname-input');
 
 function getCookie(name) {
@@ -54,14 +53,17 @@ function getRoomCreationPage() {
     const div = document.createElement('div');
     div.classList.add('container');
     const form = document.createElement('form');
+    form.classList.add('room-creation-form');
     div.appendChild(form);
     const [inputRoomNameLabel, inputRoomName] = createInputWithLabel('Название комнаты', 'text');
-    inputRoomName.classList.add('input-room-name');
+    inputRoomName.name = 'roomName';
+    inputRoomName.required = true;
     inputRoomName.minLength = 1;
     inputRoomName.maxLength = 16;
     form.appendChild(createContainer(inputRoomName, inputRoomNameLabel));
     const [inputPlayerCountLabel, inputPlayerCount] = createInputWithLabel('', 'range');
-    inputPlayerCount.classList.add('input-player-count');
+    inputPlayerCount.name = 'playerCount';
+    inputPlayerCount.required = true;
     inputPlayerCount.min = '5';
     inputPlayerCount.max = '10';
     inputPlayerCountLabel.innerText = `Количество игроков: ${inputPlayerCount.value}`;
@@ -72,26 +74,30 @@ function getRoomCreationPage() {
 
     form.appendChild(createContainer(inputPlayerCount, inputPlayerCountLabel));
     const [inputSetPasswordLabel, inputSetPassword] = createInputWithLabel('Вход по паролю', 'checkbox');
-    inputSetPassword.classList.add('input-set-password');
     form.appendChild(createContainer(inputSetPassword, inputSetPasswordLabel));
     const [inputPasswordLabel, inputPassword] = createInputWithLabel('Пароль', 'password');
-    inputPassword.classList.add('input-password');
+    inputPassword.name = 'password';
+    inputPassword.required = true;
+    inputPassword.minLength = 4;
     inputPassword.maxLength = 16;
     inputSetPassword.addEventListener('change', _ => {
         if (inputSetPassword.checked) {
-            button.before(createContainer(inputPassword, inputPasswordLabel));
+            submit.before(createContainer(inputPassword, inputPasswordLabel));
         } else {
             form.removeChild(form.children[3]);
         }
     });
-    const button = createButton('Создать', 'create-room-button', 'next-button');
-    form.appendChild(button);
+    const submit = document.createElement('input');
+    submit.type = 'submit';
+    submit.classList.add('create-room-button', 'next-button');
+    submit.value = 'Создать';
+    form.appendChild(submit);
     return div;
 }
 
 function createListItem(name, password, playersCount, maxPlayersCount) {
     const listItem = document.createElement('li');
-    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '<img>' : ''}`; // TODO замочек, если с паролем
+    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '🔓' : ''}`;
     return listItem;
 }
 
@@ -120,7 +126,7 @@ async function getListOfRooms() {
             div.classList.add('password-container');
 
             if (room.password) {
-                const [passwordInputLabel, passwordInput] = createInputWithLabel('Пароль', 'password');
+                const [passwordInputLabel, _] = createInputWithLabel('Пароль', 'password');
                 div.appendChild(passwordInputLabel);
             }
 
@@ -169,12 +175,14 @@ const states = {
     roomCreationPage: getRoomCreationPage()
 }
 
-enterBtn.addEventListener('click', async _ => {
+document.querySelector('.login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const response = await fetch('http://localhost:3000/api/setName', {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
-            nickname: nicknameInput.value
+            nickname: formData.get('nickname')
         })
     });
     if (response.status === 200) {
@@ -198,36 +206,17 @@ createBtn.addEventListener('click', _ => {
     changeState(states.menuPage, states.roomCreationPage);
 })
 
-const createRoomBtn = states.roomCreationPage.querySelector('.create-room-button');
-
-createRoomBtn.addEventListener('click', async _ => {
-    const roomName = document.querySelector('.input-room-name').value;
-    const playersCount = Number(document.querySelector('.input-player-count').value);
-    const password = document.querySelector('.input-password')?.value;
-
-    if (roomName.length < 1 || 16 < roomName.length) {
-        // TODO вывести сообщение о некорректном имени комнаты
-        return;
-    }
-
-    if (isNaN(playersCount) || playersCount < 5 || 10 < playersCount) {
-        // TODO вывести сообщение о некорректном количестве игроков
-        return;
-    }
-
-    if (password !== undefined && (password.length < 4 || 16 < password.length)) {
-        // TODO вывести сообщение о некорректном пароле
-        return;
-    }
-
+states.roomCreationPage.querySelector('.room-creation-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
     let response = await fetch('http://localhost:3000/api/createRoom', {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
-            name: roomName,
-            playersCount: playersCount,
-            password: password
+            name: formData.get('roomName'),
+            playersCount: formData.get('playerCount'),
+            password: formData.get('password')
         })
     });
 
@@ -239,7 +228,7 @@ createRoomBtn.addEventListener('click', async _ => {
             },
             body: JSON.stringify({
                 id: message.id,
-                password: password
+                password: formData.get('password')
             })
         })).text();
         document.write(html);
