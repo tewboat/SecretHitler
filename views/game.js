@@ -1,2 +1,4 @@
-const socket = io('http://localhost:3000/?id=1234');
+const socket = io(location.href);
+
+socket.emit('joinRoom', document.cookie);
 

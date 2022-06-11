@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
+const {Server} = require('socket.io');
 const Room = require('./domain/room.js');
 const cookieParser = require('cookie-parser');
 const path = require("path");
@@ -75,29 +75,29 @@ app.get('/api/getAllRooms', (req, res) => {
 
 app.post('/enter', (req, res) => {
     const id = req.body.id;
-    const password = req.body.password;
+    const password = req.body.password || undefined;
 
     const room = rooms.get(id);
 
-    if (password !== room.password || room.isFull()){
+    if (room === undefined || password !== room.password || room.isFull()) {
         res.status(403);
     }
 
     res.sendFile(path.join(__dirname, 'views', 'game.html'));
 });
 
-function validateRoomParameters(name, password, playersCount){
+function validateRoomParameters(name, password, playersCount) {
     return name !== undefined && 1 <= name.length <= 16
-    && !isNaN(playersCount) && 5 <= playersCount <= 10
-    && (password === undefined || password === null || 4 <= password.length <= 16);
+        && !isNaN(playersCount) && 5 <= playersCount <= 10
+        && (password === undefined || 4 <= password.length <= 16);
 }
 
 app.post('/api/createRoom', (req, res) => {
     const name = escape(req.body.name);
-    const password = req.body.password;
+    const password = req.body.password || undefined;
     const playersCount = Number(req.body.playersCount);
 
-    if (!validateRoomParameters(name, password, playersCount)){
+    if (!validateRoomParameters(name, password, playersCount)) {
         res.sendStatus(422);
         return;
     }
@@ -111,7 +111,7 @@ app.post('/api/createRoom', (req, res) => {
 io.on('connection', (ws) => {
     console.log(ws.handshake.query.id);
     ws.on('joinRoom', msg => {
-        console.log('joined');
+        console.log(msg);
         // TODO send updated list of players
     })
 });
