@@ -1,10 +1,10 @@
 require('./constants')
 
 class Player{
-    constructor(username){
-        this.username = username;
-        this.role = Role.Player;
-        this.party = Party.Liberal;
+    constructor(nickname){
+        this.nickname = nickname;
+        this.role = undefined; //Role.Player;
+        this.party = undefined; //Party.Liberal;
         this.isHitler = false;
     }
 }

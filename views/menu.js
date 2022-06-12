@@ -122,34 +122,49 @@ async function getListOfRooms() {
 
             lastClicked = listItem;
 
-            const div = document.createElement('div');
-            div.classList.add('password-container');
+            const form = document.createElement('form');
 
             if (room.password) {
-                const [passwordInputLabel, _] = createInputWithLabel('Пароль', 'password');
-                div.appendChild(passwordInputLabel);
+                const [passwordInputLabel, passwordInput] = createInputWithLabel('Пароль', 'password');
+                passwordInput.name = 'password';
+                passwordInput.required = true;
+                form.appendChild(passwordInputLabel);
             }
 
-            const button = createButton('Войти', 'enter-room-button');
-            div.appendChild(button);
-            button.addEventListener('click', async _ => {
+            const submit = document.createElement('input');
+            submit.type = 'submit';
+            submit.classList.add('enter-room-button');
+            submit.value = "Войти";
+
+            form.appendChild(submit);
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+
                 const response = await fetch('http://localhost:3000/enter', {
                     method: 'POST', headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     }, body: JSON.stringify({
                         id: room.id,
-                        password: div.querySelector('input')?.value
+                        password: formData.get('password')
                     })
                 });
 
                 if (response.status === 200) {
                     const html = await response.text();
+
+                    if (history.pushState) {
+                        window.history.pushState(null, null, `?id=${room.id}`);
+                    } else {
+                        window.history.replaceState(null, null, `?id=${room.id}`);
+                    }
+
                     document.write(html);
                 } else {
                     // TODO обработать случай неправильного пароля
                 }
             })
-            listItem.appendChild(div);
+            listItem.appendChild(form);
         });
         ul.appendChild(listItem);
     }
@@ -231,6 +246,13 @@ states.roomCreationPage.querySelector('.room-creation-form').addEventListener('s
                 password: formData.get('password')
             })
         })).text();
+
+        if (history.pushState) {
+            window.history.pushState(null, null, `?id=${message.id}`);
+        } else {
+            window.history.replaceState(null, null, `?id=${message.id}`);
+        }
+
         document.write(html);
     } else {
         console.log('все плохо');

@@ -16,10 +16,6 @@ class Room {
         return this.players.size === this.maxPlayersCount;
     }
 
-    validateName(roomName) {
-        return roomName.length > 0;
-    }
-
     addPlayer(username, socket) {
         this.clients.set(socket.id, socket);
         this.players.set(socket.id, new Player(username));
@@ -37,18 +33,13 @@ class Room {
         }
     }
 
-    getPlayerNameBySocketId(socketID) {
-        if (this.players.has(socketID)) {
-            return this.players.get(socketID).name
-        }
-    }
-
-    notifyUsers(action) {
+    notifyPlayers(tag, message) {
         for (let client of this.clients) {
-            action(this.clients[client]);
-
+            client[1].emit(tag, message);
         }
     }
+
+    getPlayersList
 }
 
 module.exports = Room
