@@ -109,10 +109,23 @@ app.post('/api/createRoom', (req, res) => {
 });
 
 io.on('connection', (ws) => {
-    console.log(ws.handshake.query.id);
+    const roomId = ws.handshake.query.id;
+    const room = rooms.get(roomId);
     ws.on('joinRoom', msg => {
-        console.log(msg);
-        // TODO send updated list of players
+        const payload = JSON.parse(msg).payload;
+        room.addPlayer(payload.nickname, ws);
+        const players = [];
+        for (let player of room.players) {
+            players.push({
+                nickname: player[1].nickname,
+                role: player[1].role
+            });
+        }
+        room.notifyPlayers('playerJoined', JSON.stringify({
+            payload: {
+                players: players
+            }
+        }));
     })
 });
 
