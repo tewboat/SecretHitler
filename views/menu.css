@@ -1,3 +1,5 @@
+/* main styles */
+
 .menu {
     list-style: none;
 }
@@ -6,8 +8,10 @@ body {
     min-height: 100%;
     background-color: #F3886D;
 }
+
 .container {
     display: flex;
+    flex-direction: column;
     position: absolute;
     left: 50%;
     top: 70%;
@@ -18,6 +22,7 @@ body {
     padding: 50px 70px;
     margin-top: 50px;
     justify-content: space-between;
+    align-items: center;
 }
 
 .input-container {
@@ -50,18 +55,19 @@ body {
     border-bottom: 1px solid #e74c3c;
 }
 
-/*.next-button {*/
-/*    color: #fff;*/
-/*    background-color: #e74c3c;*/
-/*    outline: none;*/
-/*    border: 0;*/
-/*    padding: 10px 20px;*/
-/*    text-transform: uppercase;*/
-/*    margin-top: 50px;*/
-/*    border-radius: 2px;*/
-/*    cursor: pointer;*/
-/*    position: relative;*/
-/*}*/
+.password-container input {
+    border: 0;
+    border-bottom: 1px solid #E88F86;
+    background: transparent;
+    font-size: 16px;
+    color: white;
+    padding: 5px 5px;
+}
+
+
+label {
+    font-family: 'Roboto', sans-serif;;
+}
 
 .input-container input:focus ~ label,
 .input-container input:valid ~ label {
@@ -76,7 +82,7 @@ body {
     font-size: 24px;
     cursor: pointer;
     border-radius: 7px 7px 7px 0;
-    font-family: Tahoma serif;
+    font-family: 'Roboto', sans-serif;;
 }
 
 .container .create-room-button .next-button {
@@ -103,7 +109,8 @@ form {
     flex-direction: column;
 }
 
-.find-button, .create-button {
+/* button styles */
+.find-button, .create-button, .update-button {
     color:#fff;
     display: flex;
     margin: 5px 20px;
@@ -117,27 +124,90 @@ form {
     background-color: #E88F86;
 }
 
-.find-button {
+.find-button, .update-button {
     background-color: #94B88F;
 }
 
-label {
-    font-family: Tahoma serif;
+.password-container .enter-room-button {
+    color:#fff;
+    display: flex;
+    margin: 5px 20px;
+    padding: 10px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 7px 7px 7px 0;
+    background-color: #535063;
+    border: 0;
+    justify-content: center;
 }
 
-.find-button, .create-button, .next-button, .enter-button {
+.find-button, .create-button, .next-button, .enter-button, .update-button {
     box-shadow: 5px 5px #555555;
     transition: 0.5s;
 }
 
-.find-button:hover, .create-button:hover, .next-button:hover, .enter-button:hover {
+.find-button:hover, .create-button:hover, .next-button:hover, .enter-button:hover, .update-button:hover {
     box-shadow: 3px 3px #555555;
     transition: 0.5s;
 }
 
-.find-button:active, .create-button:active, .next-button:active, .enter-button:active {
+.find-button:active, .create-button:active, .next-button:active, .enter-button:active, .update-button:active {
     box-shadow: 1px 1px #555555;
 }
+
+/* list styles */
+ul li {
+    display: block;
+    position: relative;
+}
+
+ul li:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+ul li:before {
+    content: "";
+    position: absolute;
+    top: 1.2em;
+    left: -30px;
+    margin-top: -.9em;
+    background: linear-gradient(45deg, #f69ec4, #f9dd94);
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+}
+
+
+ul {
+    display: block;
+    margin-left: -10px;
+}
+
+
+/* font styles */
+
+h3 {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
+strong {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
+text {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
+li {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
+
+
 
 /*.input-player-count, .input-set-password, .input-room-name, .input-password, .create-room-button {*/
 /*    margin: 5px 20px;*/
@@ -176,4 +246,16 @@ label {
 /*}*/
 
 
+/*.next-button {*/
+/*    color: #fff;*/
+/*    background-color: #e74c3c;*/
+/*    outline: none;*/
+/*    border: 0;*/
+/*    padding: 10px 20px;*/
+/*    text-transform: uppercase;*/
+/*    margin-top: 50px;*/
+/*    border-radius: 2px;*/
+/*    cursor: pointer;*/
+/*    position: relative;*/
+/*}*/
 
