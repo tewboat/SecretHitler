@@ -23,6 +23,7 @@ body {
     margin-top: 50px;
     justify-content: space-between;
     align-items: center;
+    /*overflow-y: scroll;*/
 }
 
 .input-container {
@@ -181,6 +182,12 @@ ul li:before {
 ul {
     display: block;
     margin-left: -10px;
+    height: 200px;
+    overflow: auto;
+}
+
+ul:empty {
+    height: 0;
 }
 
 
