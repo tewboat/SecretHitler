@@ -262,3 +262,6 @@ states.roomCreationPage.querySelector('.room-creation-form').addEventListener('s
         // TODO вывести сообщение, что все плохо
     }
 })
+
+
+
