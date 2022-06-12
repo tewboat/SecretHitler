@@ -154,9 +154,9 @@ async function getListOfRooms() {
                     const html = await response.text();
 
                     if (history.pushState) {
-                        window.history.pushState(null, null, `?id=${message.id}`);
+                        window.history.pushState(null, null, `?id=${room.id}`);
                     } else {
-                        window.history.replaceState(null, null, `?id=${message.id}`);
+                        window.history.replaceState(null, null, `?id=${room.id}`);
                     }
 
                     document.write(html);
