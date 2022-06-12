@@ -123,6 +123,7 @@ async function getListOfRooms() {
             lastClicked = listItem;
 
             const form = document.createElement('form');
+            form.classList.add('password-container');
 
             if (room.password) {
                 const [passwordInputLabel, passwordInput] = createInputWithLabel('Пароль', 'password');
