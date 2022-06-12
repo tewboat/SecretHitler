@@ -97,7 +97,8 @@ function getRoomCreationPage() {
 
 function createListItem(name, password, playersCount, maxPlayersCount) {
     const listItem = document.createElement('li');
-    listItem.innerHTML = `<strong>${name}</strong> ${playersCount}/${maxPlayersCount} ${password ? '🔓' : ''}`;
+    listItem.innerHTML = `<h3>${name}</h3>`;
+    listItem.innerHTML += `В игре: ${playersCount}  Максимум: ${maxPlayersCount} ${password ? '🔓' : ''}`;
     return listItem;
 }
 
@@ -126,10 +127,11 @@ async function getListOfRooms() {
             form.classList.add('password-container');
 
             if (room.password) {
-                const [passwordInputLabel, passwordInput] = createInputWithLabel('Пароль', 'password');
+                const [_, passwordInput] = createInputWithLabel('Пароль', 'password');
                 passwordInput.name = 'password';
                 passwordInput.required = true;
-                form.appendChild(passwordInputLabel);
+                passwordInput.placeholder = 'Пароль';
+                form.appendChild(passwordInput);
             }
 
             const submit = document.createElement('input');
