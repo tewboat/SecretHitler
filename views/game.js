@@ -1,11 +1,5 @@
 const socket = io(location.href);
 
-// TODO вынести в отдельный вспомогательный файл
-function getCookie(name) {
-    let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/+^])/g, '\\$1') + "=([^;]*)"));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
 const playersContainer = document.querySelector('.players-container');
 
 socket.emit('joinRoom', JSON.stringify({
@@ -14,7 +8,7 @@ socket.emit('joinRoom', JSON.stringify({
     }
 }));
 
-socket.on('playerJoined', data => {
+socket.on('playersListUpdated', data => {
     const payload = JSON.parse(data).payload;
     playersContainer.innerHTML = '';
     for (let player of payload.players){

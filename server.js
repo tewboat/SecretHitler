@@ -121,7 +121,7 @@ io.on('connection', ws => {
         const payload = JSON.parse(msg).payload;
         room.addPlayer(payload.nickname, ws);
         const players = room.getPlayersList();
-        room.notifyPlayers('playerJoined', JSON.stringify({
+        room.notifyPlayers('playersListUpdated', JSON.stringify({
             payload: {
                 players: players
             }
@@ -134,7 +134,7 @@ io.on('connection', ws => {
         if (room.players.size === 0){
             rooms.delete(room.id);
         }
-    })
+    });
 });
 
 
