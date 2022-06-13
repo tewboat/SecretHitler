@@ -87,9 +87,9 @@ app.post('/enter', (req, res) => {
 });
 
 function validateRoomParameters(name, password, playersCount) {
-    return name !== undefined && 1 <= name.length <= 16
-        && !isNaN(playersCount) && 5 <= playersCount <= 10
-        && (password === undefined || 4 <= password.length <= 16);
+    return name !== undefined && 1 <= name.length && name.length <= 16
+        && !isNaN(playersCount) && 5 <= playersCount && playersCount <= 10
+        && (password === undefined || (4 <= password.length && password.length <= 16));
 }
 
 app.post('/api/createRoom', (req, res) => {
@@ -111,6 +111,12 @@ app.post('/api/createRoom', (req, res) => {
 io.on('connection', ws => {
     const roomId = ws.handshake.query.id;
     const room = rooms.get(roomId);
+
+    if (room === undefined){
+        ws.disconnect();
+        return;
+    }
+
     ws.on('joinRoom', msg => {
         const payload = JSON.parse(msg).payload;
         room.addPlayer(payload.nickname, ws);
@@ -123,7 +129,11 @@ io.on('connection', ws => {
     });
 
     ws.on('disconnect', () => {
-        console.log('disconnected');
+        console.log('disconnected')
+        room.removePlayer(ws.id);
+        if (room.players.size === 0){
+            rooms.delete(room.id);
+        }
     })
 });
 
