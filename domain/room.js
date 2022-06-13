@@ -4,7 +4,6 @@ const Player = require('./player.js');
 class Room {
     players = new Map();
     clients = new Map();
-    // TODO need some playerData class
 
     constructor(name, password, maxPlayersCount) {
         this.name = name;

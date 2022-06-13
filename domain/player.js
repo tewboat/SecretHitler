@@ -1,10 +1,10 @@
-require('./constants')
+const types = require('./constants');
 
 class Player{
     constructor(nickname){
         this.nickname = nickname;
-        this.role = undefined; //Role.Player;
-        this.party = undefined; //Party.Liberal;
+        this.role = types.Role.Player;
+        this.party = types.Party.Liberal;
         this.isHitler = false;
     }
 }

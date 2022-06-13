@@ -1,6 +1,6 @@
-require('./constants');
+const types = require('./constants');
 const Card = require('./lawCard.js');
-// tested TODO add exports
+
 class LawDecks{
     constructor(){
         this.discard = [];
@@ -11,11 +11,11 @@ class LawDecks{
     generateDeck(){
         // TODO mb need some numbers to deck;
         for(let i = 0; i < 11; i++){
-            this.mainDeck.push(new Card(Party.Fascist));
+            this.mainDeck.push(new Card(types.Party.Fascist));
         }
 
         for(let i = 0; i < 6; i++){
-            this.mainDeck.push(new Card(Party.Liberal));
+            this.mainDeck.push(new Card(types.Party.Liberal));
         }
 
         this.shuffleArray(this.mainDeck);
