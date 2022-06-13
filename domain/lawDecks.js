@@ -1,6 +1,6 @@
 require('./constants');
 const Card = require('./lawCard.js');
-
+// tested
 class LawDecks{
     constructor(){
         this.discard = [];
@@ -26,7 +26,7 @@ class LawDecks{
         for(let i = 0; i < len * 2; i++){
             let ind1 = Math.floor(Math.random() *  len);
             let ind2 = Math.floor(Math.random() *  len);
-            [this.discard[ind1], this.discard[ind2]] = [this.discard[ind2], this.discard[ind1]];
+            [array[ind1], array[ind2]] = [array[ind2], array[ind1]];
         }
     }
 
@@ -37,7 +37,9 @@ class LawDecks{
     }
 
     getTopCard(){
-        if (this.mainDeck > 0)
+        if (this.mainDeck.length == 0 && this.discard.length == 0)
+            throw new Error('invalid get top operation');
+        if (this.mainDeck.length > 0)
             return this.mainDeck.pop();
         else{
             this.discardToDeck();
