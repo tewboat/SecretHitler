@@ -1,4 +1,4 @@
-require('./constants')
+const types = require('./constants');
 
 class FascistField {
     constructor(playerCount) {
@@ -80,7 +80,7 @@ class LawsField {
     }
 
     addLaw(law) {
-        if (law === Party.Liberal) {
+        if (law === types.Party.Liberal) {
             this.liberalField.getNextEvent();
         } else {
             this.fascistField.getNextEvent();
