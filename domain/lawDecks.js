@@ -1,6 +1,6 @@
 require('./constants');
 const Card = require('./lawCard.js');
-// tested
+// tested TODO add exports
 class LawDecks{
     constructor(){
         this.discard = [];
@@ -37,15 +37,21 @@ class LawDecks{
     }
 
     getTopCard(){
-        if (this.mainDeck.length == 0 && this.discard.length == 0)
+        if (this.mainDeck.length === 0 && this.discard.length === 0)
             throw new Error('invalid get top operation');
         if (this.mainDeck.length > 0)
             return this.mainDeck.pop();
         else{
             this.discardToDeck();
             this.shuffleArray(this.mainDeck);
-            this.getTopCard();
+            return this.getTopCard();
         }
+    }
+
+    discardCard(card){
+        if (card instanceof Card)
+            this.discard.push(card);
+        else throw new Error('invalid cardType to discard');
     }
 }
 
