@@ -2,37 +2,52 @@ const crypto = require('crypto');
 const Player = require('./player.js');
 
 class Room {
-    players = new Map();
-    clients = new Map();
 
     constructor(name, password, maxPlayersCount) {
         this.name = name;
+        this.players = [];
         this.id = crypto.randomUUID();
         this.maxPlayersCount = maxPlayersCount;
         this.password = password;
     }
 
-    isFull() {
-        return this.players.size === this.maxPlayersCount;
+    findBy(array, condition){
+        let result = []
+        for(let pl of this.players)
+            if (condition(pl))
+                result.push(pl);
+        return result;
+    }
+
+    apply(array, action){
+        for (let e of array)
+            action(e);
     }
 
     addPlayer(username, socket) {
-        this.clients.set(socket.id, socket);
-        this.players.set(socket.id, new Player(username));
-        return this.players.size - 1;
+        if (this.isFull()) throw new Error("this room already full");
+        if (this.findBy(this.players, (p) => p.nickname === username).length === 0) {
+            this.players.push(new Player(username, socket, socket.id));
+            return this.players.length - 1;
+        }
+        else{
+            throw new Error("that nickname already exists");
+        }
     }
 
     removePlayer(socketId) {
-        if (this.clients.has(socketId)) {
-            this.clients.delete(socketId)
-        }
-        if (this.players.has(socketId)) {
-            const player = this.players.get(socketId)
-            this.players.delete(socketId)
-            return player.name
-        }
+        let newArray = this.findBy(this.players, (p) => p.socketID !== socketId);
+        if (newArray.length === this.players.length)
+            throw new Error("no such socketID to delete");
+        else
+            this.players = newArray;
     }
 
+    isFull() {
+        return this.players.length === this.maxPlayersCount;
+    }
+
+    // TODO change for array
     notifyPlayers(tag, message) {
         for (let client of this.clients) {
             client[1].emit(tag, message);
