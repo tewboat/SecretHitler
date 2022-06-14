@@ -10,6 +10,7 @@ class Player{
         this.role = types.Role.Player;
         this.party = undefined;
         this.isHitler = false;
+        this.src = undefined;
     }
 }
 
