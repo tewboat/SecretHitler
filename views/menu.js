@@ -172,12 +172,17 @@ async function getListOfRooms() {
 async function getListOfRoomsPage() {
     const div = document.createElement('div');
     div.classList.add('container');
+    const backButton = createButton('<', 'back-button');
+    div.appendChild(backButton);
     div.appendChild(await getListOfRooms());
     const updateButton = createButton('Обновить', 'update-button');
     div.appendChild(updateButton);
     updateButton.addEventListener('click', async _ => {
         const list = div.querySelector('ul');
         div.replaceChild(await getListOfRooms(), list);
+    });
+    backButton.addEventListener('click', async _ => {
+        changeState(document.querySelector('.container'), states.menuPage);
     })
     return div;
 }
