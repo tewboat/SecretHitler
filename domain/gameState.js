@@ -63,12 +63,17 @@ class GameState{
         for(let i = 0; i < this.playersCount; i++) {
             if (this.players[i].party === undefined) {
                 this.players[i].party = types.Party.Liberal;
-                this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcLC;
+                this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcLC + '.png';
                 srcLC++;
             }
             else{
-                this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcFC;
-                srcFC++;
+                if (this.players[i].isHitler){
+                    this.players[i].src = 'hitler.png'
+                }
+                else {
+                    this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcFC + '.png';
+                    srcFC++;
+                }
             }
         }
     }
