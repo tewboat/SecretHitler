@@ -20,9 +20,9 @@
 .players-container {
     display: flex;
     justify-content: center;
-    margin: 0 auto;
     max-width: 75%;
     padding: 10px;
+    margin: 5% auto 0;
 }
 
 .player {
@@ -33,6 +33,10 @@
 
 .role-card {
     width: 30%;
+}
+
+.low {
+    width: 50%;
 }
 
 .popup {
@@ -64,7 +68,7 @@ body {
 
 .fascist tr, .fascist td {
     border: 5px solid #FF8630;
-    padding: 70px;
+    padding: 43px;
     vertical-align: top;
     line-height: 1.2;
     border-radius: 2px;
@@ -73,15 +77,23 @@ body {
 
 .liberal tr, .liberal td {
     border: 5px solid dodgerblue;
-    padding: 70px;
+    padding: 43px;
     vertical-align: top;
     line-height: 1.2;
     background: #309CFB;
 }
 
+.fascist {
+    width: 470px;
+}
+
+.liberal {
+    width: 395px;
+}
+
 caption {
     font-family: 'Roboto', sans-serif;
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .fascist-field, .liberal-field{
@@ -89,8 +101,26 @@ caption {
     flex-direction: column;
     margin-top: 5%;
     margin-left: 2%;
+    margin-bottom: -2%;
     border: 2px double;
     width: max-content;
+}
+
+.take-cards, .discard-cards {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5%;
+    margin-left: 2%;
+    margin-bottom: -2%;
+    justify-content: center
+}
+
+.take-cards {
+    align-items: flex-end;
+}
+
+.discard-cards {
+    align-items: flex-start;
 }
 
 .fascist-field {
@@ -102,9 +132,8 @@ caption {
 }
 
 .fascist, .liberal {
-    width: 50%;
-    height: 20%;
     border-spacing: 10px;
+    table-layout: fixed;
 }
 
 header {
@@ -114,7 +143,7 @@ header {
 }
 
 .links .link + .link {
-    margin-left: 20px;
+    margin-left: 30px;
 }
 
 .links .link {
@@ -124,7 +153,7 @@ header {
     transition: all 0.3s linear;
     border: 1px solid #E88F86;
     border-radius: 5px;
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .links .link:hover {
@@ -139,5 +168,13 @@ header {
 }
 
 aside {
+    display: flex;
+}
+
+#hitler-icon {
+    width: 10%;
+}
+
+.fields {
     display: flex;
 }
