@@ -128,6 +128,10 @@ io.on('connection', ws => {
         }));
     });
 
+    ws.on('lawChoosen', msg => {
+
+    });
+
     ws.on('disconnect', () => {
         console.log('disconnected')
         room.removePlayer(ws.id);
