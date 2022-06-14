@@ -1,5 +1,6 @@
 const LawField = require('./lawField');
 const LawDeck = require('./lawDecks');
+const types = require('./constants');
 
 class GameState{
     constructor(playersCount, players) {
@@ -7,14 +8,15 @@ class GameState{
         this.players = players;
         this.field = new LawField(playersCount);
         this.decks = new LawDeck();
-
+        this.generatePlayersRoles();
         this.lastPresident = null;
         this.lastChancellor = null;
         // choose somebody to love;
-        this.currentPresident = null;
-        this.currentChancellor = null;
-
+        this.currentPresident = players[0];
+        this.currentChancellor = players[1];
         this.skipPawn = 0;
+
+        // TODO start game and mb add roles
 
     }
 
@@ -23,18 +25,40 @@ class GameState{
     }
 
     generatePlayersRoles(){
-        //const shuffled = array.sort(() => 0.5 - Math.random());
-        //let selected = shuffled.slice(0, n);
-        if (this.playersCount === 5 || this.playersCount === 6){
-            // 1 fs + 1 H
-        }
-        else if (this.playersCount === 7 || this.playersCount === 8){
-            // 2 fs + 1 H
-        }
-        else if (this.playersCount === 9 || this.playersCount === 10){
-            // 3 fs + 1 H
-        }
+        let unusedSz = this.playersCount;
+        let randHt = Math.floor(Math.random() *  unusedSz);
+        this.players[randHt].party = types.Party.Fascist;
+        this.players[randHt].isHitler = true;
+        unusedSz--;
+
+        let fascistCount = -1;
+        if (this.playersCount === 5 || this.playersCount === 6)
+            fascistCount = 1;
+        else if (this.playersCount === 7 || this.playersCount === 8)
+            fascistCount = 2;
+        else if (this.playersCount === 9 || this.playersCount === 10)
+            fascistCount = 3;
         else throw new Error('invalid count of players');
+
+        for(let f = 0; f < fascistCount; f++){
+            let randFs = Math.floor(Math.random() *  unusedSz);
+            let i = 0;
+            while(true){
+                if (this.players[i].party === undefined) {
+                    if (randFs === 0){
+                        this.players[i].party = types.Party.Fascist;
+                        break;
+                    }
+                    randFs--;
+                }
+                i++;
+                i %= this.playersCount;
+            }
+        }
+
+        for(let i = 0; i < this.playersCount; i++)
+            if (this.players[i].party === undefined)
+                this.players[i].party = types.Party.Liberal;
     }
 
     updateSkipPawn(wasSkipped){
@@ -49,6 +73,11 @@ class GameState{
     }
 
     randomLawEvent(){
+
+    }
+
+    chooseChancellorEvent()
+    {
 
     }
 

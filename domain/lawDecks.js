@@ -1,4 +1,4 @@
-require('./constants');
+const types = require('./constants');
 const Card = require('./lawCard.js');
 
 class LawDecks{
@@ -11,11 +11,11 @@ class LawDecks{
     generateDeck(){
         // TODO mb need some numbers to deck;
         for(let i = 0; i < 11; i++){
-            this.mainDeck.push(new Card(Party.Fascist));
+            this.mainDeck.push(new Card(types.Party.Fascist));
         }
 
         for(let i = 0; i < 6; i++){
-            this.mainDeck.push(new Card(Party.Liberal));
+            this.mainDeck.push(new Card(types.Party.Liberal));
         }
 
         this.shuffleArray(this.mainDeck);
@@ -26,7 +26,7 @@ class LawDecks{
         for(let i = 0; i < len * 2; i++){
             let ind1 = Math.floor(Math.random() *  len);
             let ind2 = Math.floor(Math.random() *  len);
-            [this.discard[ind1], this.discard[ind2]] = [this.discard[ind2], this.discard[ind1]];
+            [array[ind1], array[ind2]] = [array[ind2], array[ind1]];
         }
     }
 
@@ -37,13 +37,21 @@ class LawDecks{
     }
 
     getTopCard(){
-        if (this.mainDeck > 0)
+        if (this.mainDeck.length === 0 && this.discard.length === 0)
+            throw new Error('invalid get top operation');
+        if (this.mainDeck.length > 0)
             return this.mainDeck.pop();
         else{
             this.discardToDeck();
             this.shuffleArray(this.mainDeck);
-            this.getTopCard();
+            return this.getTopCard();
         }
+    }
+
+    discardCard(card){
+        if (card instanceof Card)
+            this.discard.push(card);
+        else throw new Error('invalid cardType to discard');
     }
 }
 

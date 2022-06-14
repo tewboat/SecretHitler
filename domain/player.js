@@ -1,10 +1,12 @@
-require('./constants')
+const types = require('./constants');
+
+//TODO do we really need role?
 
 class Player{
     constructor(nickname){
         this.nickname = nickname;
-        this.role = undefined; //Role.Player;
-        this.party = undefined; //Party.Liberal;
+        this.role = types.Role.Player;
+        this.party = undefined;
         this.isHitler = false;
     }
 }

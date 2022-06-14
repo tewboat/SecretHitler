@@ -1,8 +1,10 @@
-require('./constants')
+const types = require('./constants');
 
 class LawCard{
     constructor(cardType){
-        this.type = cardType; // TODO should be Party enum(Liberal or Fascist);
+        if (cardType === types.Party.Fascist || cardType === types.Party.Liberal)
+            this.type = cardType;
+        else throw new Error('invalid cardType to create');
     }
 }
 
