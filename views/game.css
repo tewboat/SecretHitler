@@ -5,6 +5,18 @@
     box-sizing: border-box;
 }
 
+.cards-container {
+    display: flex;
+}
+
+.cards-container > input {
+    display: none;
+}
+
+.cards-container label:checked {
+    border: aqua solid 4px;
+}
+
 .players-container {
     display: flex;
     justify-content: center;
