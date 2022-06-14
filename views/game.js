@@ -1,9 +1,25 @@
 const socket = io(location.href);
 
-// TODO вынести в отдельный вспомогательный файл
-function getCookie(name) {
-    let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/+^])/g, '\\$1') + "=([^;]*)"));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
+const playersContainer = document.querySelector('.players-container');
+
+function removeAllChildren(element){
+    while (element.lastElementChild) {
+        element.removeChild(element.lastElementChild);
+    }
+}
+
+function createPlayerCard(player){
+    const div = document.createElement('div');
+    div.classList.add('player');
+    const img = document.createElement('img');
+    img.src = 'images/rolesCards/card_shirt.png';
+    img.alt = 'Role card shirt';
+    img.classList.add('role-card');
+    div.appendChild(img);
+    const name = document.createElement('strong');
+    name.innerText = player.nickname;
+    div.appendChild(name);
+    return div;
 }
 
 socket.emit('joinRoom', JSON.stringify({
@@ -12,6 +28,11 @@ socket.emit('joinRoom', JSON.stringify({
     }
 }));
 
-socket.on('playerJoined', data => {
-    console.log(data);
+socket.on('playersListUpdated', data => {
+    const payload = JSON.parse(data).payload;
+    removeAllChildren(playersContainer);
+    for (let player of payload.players){
+        const playerCard = createPlayerCard(player);
+        playersContainer.appendChild(playerCard);
+    }
 });
