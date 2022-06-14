@@ -126,10 +126,18 @@ io.on('connection', ws => {
                 players: players
             }
         }), e => true);
+
+        if (room.players.length === room.maxPlayersCount) {
+            room.notifyPlayers('readinessСheck', null, () => true);
+        }
+    });
+
+    ws.on('ready', () => {
+
     });
 
     ws.on('start', () => {
-        room
+
     });
 
     ws.on('lawChoosen', msg => {

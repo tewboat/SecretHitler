@@ -8,16 +8,20 @@ function removeAllChildren(element) {
     }
 }
 
-function createModalWindow(title) {
+function createModalWindow() {
     const popup = document.createElement('div');
     popup.classList.add('popup');
     const popupBody = document.createElement('div');
     popupBody.classList.add('popup-body');
     popup.appendChild(popupBody);
+    return popup;
+}
+
+function createModalWindowForm(title) {
     const popupContent = document.createElement('form');
     popupContent.classList.add('popup-content');
     popupBody.appendChild(popupContent);
-    const popupTitle = document.createElement('popup-title');
+    const popupTitle = document.createElement('div');
     popupTitle.innerText = title;
     popupTitle.classList.add('popup-title');
     popupContent.appendChild(popupTitle);
@@ -25,7 +29,7 @@ function createModalWindow(title) {
     submit.type = 'submit';
     submit.classList.add('modal-window-submit');
     popupContent.appendChild(submit);
-    return popup;
+    return popupContent;
 }
 
 function createPlayerCard(player) {
@@ -43,8 +47,10 @@ function createPlayerCard(player) {
 }
 
 function createCardsModalWindow(cards, windowTitle, socketEventTag) {
-    const modalWindow = createModalWindow(windowTitle);
-    const submit = modalWindow.querySelector('input[type=submit]');
+    const modalWindow = createModalWindow();
+    const modalWindowForm = createModalWindowForm(windowTitle);
+    modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
+    const submit = modalWindowForm.querySelector('.modal-window-submit');
     const cardsContainer = document.createElement('div');
     cardsContainer.classList.add('cards-container');
     for (let law of cards) {
@@ -72,6 +78,25 @@ function createCardsModalWindow(cards, windowTitle, socketEventTag) {
     return modalWindow;
 }
 
+function createReadyCheckModalWindow() {
+    const modalWindow = createModalWindow();
+    const title = document.createElement('div');
+    title.classList.add('popup-title');
+    title.innerText = 'Подтвердите готовность';
+    const button = document.createElement('input');
+    input.type = 'button';
+    input.classList.add('modal-window-submit');
+    input.addEventListener('click', _ => {
+        socket.emit('ready', JSON.stringify({
+            payload: {
+                ready: true
+            }
+        }));
+        document.body.removeChild(modalWindow);
+    });
+    return modalWindow;
+}
+
 socket.emit('joinRoom', JSON.stringify({
     payload: {
         nickname: getCookie('nickname')
@@ -89,9 +114,9 @@ socket.on('playersListUpdated', data => {
 
 socket.on('choosingLaw', data => {
     const payload = JSON.parse(data).payload;
-})
+});
 
-
-let c = createCardsModalWindow([], 'lol', 'bla');
-let d = document.querySelector('body');
-d.appendChild(c);
+socket.on('readinessСheck', () => {
+    const modalWindow = createReadyCheckModalWindow();
+    body.appendChild(modalWindow);
+});

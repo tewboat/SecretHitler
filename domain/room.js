@@ -96,7 +96,7 @@ class Room {
             }
         }), player => player.party === Const.Party.Fascist);
 
-        const hilterList = undefined;
+        let hilterList = undefined;
         if (this.maxPlayersCount <= 6) {
             hilterList = fascistList;
         } else {
