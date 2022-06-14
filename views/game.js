@@ -123,6 +123,16 @@ socket.on('playersListUpdated', data => {
 socket.on('start', data => {
     const payload = JSON.parse(data).payload;
     updatePlayersList(payload.players);
+    const modalWindow = createModalWindow();
+    const title = document.createElement('h4');
+    title.innerText = 'Ваша роль';
+    const role = document.createElement('p');
+    role.innerText = payload.role;
+    const president = document.createElement('p');
+    president.innerText = `Президентом назначен ${payload.president}`;
+    modalWindow.querySelector('.popup-body').append(title, role, president);
+    document.body.appendChild(modalWindow);
+    setTimeout(() => document.body.removeChild(modalWindow), 5000);
 });
 
 socket.on('choosingLaw', data => {
