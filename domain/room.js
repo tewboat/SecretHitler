@@ -1,5 +1,6 @@
 const crypto = require('crypto');
-const Player = require('./player.js');
+const Player = require('./player');
+const GameState = require('./gameState');
 
 class Room {
 
@@ -9,6 +10,7 @@ class Room {
         this.id = crypto.randomUUID();
         this.maxPlayersCount = maxPlayersCount;
         this.password = password;
+        this.gameState = undefined;
     }
 
     findBy(array, condition){
@@ -48,9 +50,11 @@ class Room {
     }
 
     // TODO change for array
-    notifyPlayers(tag, message) {
-        for (let client of this.clients) {
-            client[1].emit(tag, message);
+    notifyPlayers(tag, message, selector) {
+        for (let player of this.players) {
+            if (selector(player)) {
+                player.socket.emit(tag, message);
+            }
         }
     }
 
@@ -64,6 +68,22 @@ class Room {
         }
         return players;
     }
+
+    runGame(){
+        if (this.players.length !== this.maxPlayersCount) {
+            return;
+        }
+
+        this.gameState = new GameState(this.maxPlayersCount, this.players);
+        const fascistList = [];
+        for (let player of this.gameState.players){
+            fascistList.push({
+                src: player.src, // TODO
+                nickname: player.nickname
+            })
+        }
+
+    }
 }
 
-module.exports = Room
+module.exports = Room;
