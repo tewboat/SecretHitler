@@ -12,6 +12,7 @@ class Room {
         this.maxPlayersCount = maxPlayersCount;
         this.password = password;
         this.gameState = undefined;
+        this.readyCount = 0;
     }
 
     findBy(array, condition) {
@@ -41,8 +42,24 @@ class Room {
         let newArray = this.findBy(this.players, (p) => p.socketID !== socketId);
         if (newArray.length === this.players.length)
             throw new Error("no such socketID to delete");
-        else
+        else {
+            this.readyCount--;
             this.players = newArray;
+        }
+    }
+
+    isAllReady(){
+        return this.readyCount === this.maxPlayersCount;
+    }
+
+    setReady(socketID){
+        let pl = this.findBy(this.players, (pl) => pl.socketID === socketID);
+        if (pl.length !== 1) throw new Error("socket ready error");
+        if (pl[0].ready !== true) {
+            pl[0].ready = true;
+            this.readyCount++;
+        }
+        return this.isAllReady();
     }
 
     isFull() {

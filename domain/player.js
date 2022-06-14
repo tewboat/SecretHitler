@@ -11,6 +11,7 @@ class Player{
         this.party = undefined;
         this.isHitler = false;
         this.src = undefined;
+        this.ready = false;
     }
 }
 
