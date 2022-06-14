@@ -31,7 +31,7 @@ function createPlayerCard(player){
     const div = document.createElement('div');
     div.classList.add('player');
     const img = document.createElement('img');
-    img.src = 'images/rolesCards/card_shirt.png';
+    img.src = player.src;
     img.alt = 'Role card shirt';
     img.classList.add('role-card');
     div.appendChild(img);
