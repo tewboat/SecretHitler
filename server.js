@@ -134,13 +134,8 @@ io.on('connection', ws => {
 
     ws.on('ready', () => {
         if (room.setReady(ws.id)){
-            console.log('all are ready');
             setTimeout(() => room.runGame(), 1000);
         }
-    });
-
-    ws.on('start', () => {
-
     });
 
     ws.on('lawChoosen', msg => {
@@ -150,7 +145,7 @@ io.on('connection', ws => {
     ws.on('disconnect', () => {
         console.log('disconnected')
         room.removePlayer(ws.id);
-        if (room.players.size === 0){
+        if (room.players.length === 0){
             rooms.delete(room.id);
             return;
         }

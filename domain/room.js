@@ -108,9 +108,9 @@ class Room {
             }
         });
 
-        this.notifyPlayers('playersListUpdated', JSON.stringify({
+        this.notifyPlayers('start', JSON.stringify({
             payload: {
-                president: this.gameState.currentPresident,
+                president: this.gameState.currentPresident.nickname,
                 role: 'Фашист',
                 players: fascistList
             }
@@ -134,9 +134,9 @@ class Room {
             });
         }
 
-        this.notifyPlayers('playersListUpdated', JSON.stringify({
+        this.notifyPlayers('start', JSON.stringify({
             payload: {
-                president: this.gameState.currentPresident,
+                president: this.gameState.currentPresident.nickname,
                 role: 'Гитлер',
                 players: hilterList
             }
@@ -156,9 +156,9 @@ class Room {
                     nickname: player.nickname
                 }
             });
-            this.notifyPlayers('playersListUpdated', JSON.stringify({
+            this.notifyPlayers('start', JSON.stringify({
                 payload: {
-                    president: this.gameState.currentPresident,
+                    president: this.gameState.currentPresident.nickname,
                     role: 'Либерал',
                     players: list
                 }
