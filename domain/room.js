@@ -60,8 +60,8 @@ class Room {
         const players = [];
         for (let player of this.players) {
             players.push({
-                nickname: player[1].nickname,
-                role: player[1].role
+                nickname: player.nickname,
+                role: player.role
             });
         }
         return players;

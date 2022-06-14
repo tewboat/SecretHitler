@@ -20,6 +20,7 @@ class GameState{
 
     }
 
+    // TODO useless method
     getRandomPlayer(condition){
         let rand = Math.floor(Math.random() *  this.playersCount);
     }
@@ -54,6 +55,7 @@ class GameState{
                 i++;
                 i %= this.playersCount;
             }
+            unusedSz--;
         }
 
         for(let i = 0; i < this.playersCount; i++)
@@ -70,6 +72,7 @@ class GameState{
             }
         }
         else this.skipPawn = 0;
+        // TODO add skipPawn change on players
     }
 
     randomLawEvent(){
