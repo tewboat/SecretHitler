@@ -125,7 +125,11 @@ io.on('connection', ws => {
             payload: {
                 players: players
             }
-        }));
+        }), e => true);
+    });
+
+    ws.on('start', () => {
+        room
     });
 
     ws.on('lawChoosen', msg => {
@@ -144,7 +148,7 @@ io.on('connection', ws => {
             payload: {
                 players: players
             }
-        }));
+        }), () => true);
     });
 });
 
