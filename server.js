@@ -128,6 +128,10 @@ io.on('connection', ws => {
         }));
     });
 
+    ws.on('start', () => {
+
+    });
+
     ws.on('lawChoosen', msg => {
 
     });
