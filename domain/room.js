@@ -54,8 +54,6 @@ class Room {
         }
     }
 
-
-    // TODO change for array
     getPlayersList(){
         const players = [];
         for (let player of this.players) {

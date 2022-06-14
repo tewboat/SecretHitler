@@ -1,0 +1,131 @@
+*, *:before, *:after {
+    margin: 0;
+    border: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.players-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 75%;
+    padding: 10px;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.role-card {
+    width: 30%;
+}
+
+.popup {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.popup-body {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 10px;
+}
+
+.popup-content {
+    background-color: white;
+    color: rgb(0, 0, 0);
+    max-width: 800px;
+    padding: 30px;
+}
+
+body {
+    min-height: 100%;
+    background-color: #C9CBCD;
+}
+
+.fascist tr, .fascist td {
+    border: 5px solid #FF8630;
+    padding: 70px;
+    vertical-align: top;
+    line-height: 1.2;
+    border-radius: 2px;
+    background: #F39D47;
+}
+
+.liberal tr, .liberal td {
+    border: 5px solid dodgerblue;
+    padding: 70px;
+    vertical-align: top;
+    line-height: 1.2;
+    background: #309CFB;
+}
+
+caption {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+}
+
+.fascist-field, .liberal-field{
+    display: flex;
+    flex-direction: column;
+    margin-top: 5%;
+    margin-left: 2%;
+    border: 2px double;
+    width: max-content;
+}
+
+.fascist-field {
+    background: #F7C898 ;
+}
+
+.liberal-field {
+    background: #76BCFA ;
+}
+
+.fascist, .liberal {
+    width: 50%;
+    height: 20%;
+    border-spacing: 10px;
+}
+
+header {
+    display: flex;
+    justify-content: space-around;
+    background: linear-gradient(#CBC9D5, #A9A3C5);
+}
+
+.links .link + .link {
+    margin-left: 20px;
+}
+
+.links .link {
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    text-decoration: none;
+    transition: all 0.3s linear;
+    border: 1px solid #E88F86;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.links .link:hover {
+    background-color: #FF8630;
+    transition: background-color 0.3s linear;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+aside {
+    display: flex;
+}
