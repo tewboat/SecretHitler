@@ -39,28 +39,6 @@
     width: 50%;
 }
 
-.popup {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.popup-body {
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 30px 10px;
-}
-
-.popup-content {
-    background-color: white;
-    color: rgb(0, 0, 0);
-    max-width: 800px;
-    padding: 30px;
-}
-
 body {
     min-height: 100%;
     background-color: #C9CBCD;
@@ -96,7 +74,7 @@ caption {
     font-size: 24px;
 }
 
-.fascist-field, .liberal-field{
+.fascist-field, .liberal-field {
     display: flex;
     flex-direction: column;
     margin-top: 5%;
@@ -124,11 +102,11 @@ caption {
 }
 
 .fascist-field {
-    background: #F7C898 ;
+    background: #F7C898;
 }
 
 .liberal-field {
-    background: #76BCFA ;
+    background: #76BCFA;
 }
 
 .fascist, .liberal {
@@ -177,4 +155,63 @@ aside {
 
 .fields {
     display: flex;
+}
+
+
+/* pop-ups */
+/*.popup {*/
+/*    position: fixed;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-color: rgba(0, 0, 0, 0.2);*/
+/*}*/
+
+.popup {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: stretch;
+    align-items: center;
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/*.popup-body {*/
+/*    min-height: 100%;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    padding: 30px 10px;*/
+/*}*/
+
+.popup-body {
+    order: 0;
+    flex: 0 1 auto;
+    align-self: auto;
+    width: 30%;
+    min-height: 250px;
+    background: white;
+}
+
+/*.popup-content {*/
+/*    background-color: white;*/
+/*    color: rgb(0, 0, 0);*/
+/*    max-width: 800px;*/
+/*    padding: 30px;*/
+/*}*/
+
+.modal-window-submit {
+    color:#fff;
+    display: flex;
+    margin: 5px 20px;
+    padding: 10px 30px;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 7px 7px 7px 0;
 }
