@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const Player = require('./player');
 const GameState = require('./gameState');
+const Const = require('./constants');
 
 class Room {
 
@@ -13,15 +14,15 @@ class Room {
         this.gameState = undefined;
     }
 
-    findBy(array, condition){
+    findBy(array, condition) {
         let result = []
-        for(let pl of this.players)
+        for (let pl of this.players)
             if (condition(pl))
                 result.push(pl);
         return result;
     }
 
-    apply(array, action){
+    apply(array, action) {
         for (let e of array)
             action(e);
     }
@@ -31,8 +32,7 @@ class Room {
         if (this.findBy(this.players, (p) => p.nickname === username).length === 0) {
             this.players.push(new Player(username, socket, socket.id));
             return this.players.length - 1;
-        }
-        else{
+        } else {
             throw new Error("that nickname already exists");
         }
     }
@@ -58,7 +58,7 @@ class Room {
         }
     }
 
-    getPlayersList(){
+    getPlayersList() {
         const players = [];
         for (let player of this.players) {
             players.push({
@@ -69,20 +69,77 @@ class Room {
         return players;
     }
 
-    runGame(){
+    getPlayersInfoList(selector) {
+        const playersInfo = [];
+        for (let player of this.gameState.players) {
+            playersInfo.push(selector(player));
+        }
+        return playersInfo;
+    }
+
+    runGame() {
         if (this.players.length !== this.maxPlayersCount) {
             return;
         }
 
         this.gameState = new GameState(this.maxPlayersCount, this.players);
-        const fascistList = [];
-        for (let player of this.gameState.players){
-            fascistList.push({
-                src: player.src, // TODO
+        const fascistList = this.getPlayersInfoList(player => {
+            return {
+                src: player.src,
                 nickname: player.nickname
-            })
-        }
+            }
+        });
 
+        this.notifyPlayers('playersListUpdated', JSON.stringify({
+            payload: {
+                players: fascistList
+            }
+        }), player => player.party === Const.Party.Fascist);
+
+        const hilterList = undefined;
+        if (this.maxPlayersCount <= 6) {
+            hilterList = fascistList;
+        } else {
+            hilterList = this.getPlayersInfoList(player => {
+                if (player.isHitler) {
+                    return {
+                        src: player.src,
+                        nickname: player.nickname
+                    }
+                    return {
+                        src: 'views/images/rolesCards/card_shirt.png',
+                        nickname: player.nickname
+                    }
+                }
+            });
+
+            this.notifyPlayers('playersListUpdated', JSON.stringify({
+                payload: {
+                    players: hilterList
+                }
+            }), player => player.isHitler);
+
+            for (let player in this.gameState.players) {
+                if (player.party !== Const.Party.Liberal) continue;
+                const list = this.getPlayersInfoList(p => {
+                    if (player === p) {
+                        return {
+                            src: player.src,
+                            nickname: player.nickname
+                        }
+                        return {
+                            src: 'views/images/rolesCards/card_shirt.png',
+                            nickname: player.nickname
+                        }
+                    }
+                });
+                this.notifyPlayers('playersListUpdated', JSON.stringify({
+                    payload: {
+                        players: hilterList
+                    }
+                }), p => p === player);
+            }
+        }
     }
 }
 
