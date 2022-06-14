@@ -133,7 +133,14 @@ io.on('connection', ws => {
         room.removePlayer(ws.id);
         if (room.players.size === 0){
             rooms.delete(room.id);
+            return;
         }
+        const players = room.getPlayersList();
+        room.notifyPlayers('playersListUpdated', JSON.stringify({
+            payload: {
+                players: players
+            }
+        }));
     });
 });
 
