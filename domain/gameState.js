@@ -9,6 +9,7 @@ class GameState{
         this.field = new LawField(playersCount);
         this.decks = new LawDeck();
         this.generatePlayersRoles();
+
         this.lastPresident = null;
         this.lastChancellor = null;
         // choose somebody to love;
@@ -57,10 +58,24 @@ class GameState{
             }
             unusedSz--;
         }
-
-        for(let i = 0; i < this.playersCount; i++)
-            if (this.players[i].party === undefined)
+        let srcFC = 1;
+        let srcLC = 1;
+        for(let i = 0; i < this.playersCount; i++) {
+            if (this.players[i].party === undefined) {
                 this.players[i].party = types.Party.Liberal;
+                this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcLC + '.png';
+                srcLC++;
+            }
+            else{
+                if (this.players[i].isHitler){
+                    this.players[i].src = 'hitler.png'
+                }
+                else {
+                    this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcFC + '.png';
+                    srcFC++;
+                }
+            }
+        }
     }
 
     updateSkipPawn(wasSkipped){
