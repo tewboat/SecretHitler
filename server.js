@@ -66,7 +66,7 @@ app.get('/api/getAllRooms', (req, res) => {
             id: key,
             name: value.name,
             password: value.password !== undefined,
-            playersCount: value.players.size,
+            playersCount: value.players.length,
             maxPlayersCount: value.maxPlayersCount
         })
     })
@@ -126,10 +126,21 @@ io.on('connection', ws => {
                 players: players
             }
         }), e => true);
+
+        if (room.players.length === room.maxPlayersCount) {
+            room.notifyPlayers('readinessСheck', null, () => true);
+        }
+    });
+
+    ws.on('ready', () => {
+        if (room.setReady(ws.id)){
+            console.log('all are ready');
+            setTimeout(() => room.runGame(), 1000);
+        }
     });
 
     ws.on('start', () => {
-        room
+
     });
 
     ws.on('lawChoosen', msg => {

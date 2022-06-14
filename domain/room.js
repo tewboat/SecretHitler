@@ -31,28 +31,29 @@ class Room {
     addPlayer(username, socket) {
         if (this.isFull()) throw new Error("this room already full");
         if (this.findBy(this.players, (p) => p.nickname === username).length === 0) {
-            this.players.push(new Player(username, socket, socket.id));
+            this.players.push(new Player(username, socket));
             return this.players.length - 1;
         } else {
-            throw new Error("that nickname already exists");
+            //throw new Error("that nickname already exists");
         }
     }
 
     removePlayer(socketId) {
         let newArray = this.findBy(this.players, (p) => p.socketID !== socketId);
-        if (newArray.length === this.players.length)
-            throw new Error("no such socketID to delete");
+        if (newArray.length === this.players.length) {
+            //throw new Error("no such socketID to delete");
+        }
         else {
             this.readyCount--;
             this.players = newArray;
         }
     }
 
-    isAllReady(){
+    isAllReady() {
         return this.readyCount === this.maxPlayersCount;
     }
 
-    setReady(socketID){
+    setReady(socketID) {
         let pl = this.findBy(this.players, (pl) => pl.socketID === socketID);
         if (pl.length !== 1) throw new Error("socket ready error");
         if (pl[0].ready !== true) {
@@ -66,7 +67,6 @@ class Room {
         return this.players.length === this.maxPlayersCount;
     }
 
-    // TODO change for array
     notifyPlayers(tag, message, selector) {
         for (let player of this.players) {
             if (selector(player)) {
@@ -80,7 +80,8 @@ class Room {
         for (let player of this.players) {
             players.push({
                 nickname: player.nickname,
-                role: player.role
+                role: player.role,
+                src: player.src
             });
         }
         return players;
@@ -109,11 +110,13 @@ class Room {
 
         this.notifyPlayers('playersListUpdated', JSON.stringify({
             payload: {
+                president: this.gameState.currentPresident,
+                role: 'Фашист',
                 players: fascistList
             }
         }), player => player.party === Const.Party.Fascist);
 
-        const hilterList = undefined;
+        let hilterList;
         if (this.maxPlayersCount <= 6) {
             hilterList = fascistList;
         } else {
@@ -123,39 +126,43 @@ class Room {
                         src: player.src,
                         nickname: player.nickname
                     }
+                }
+                return {
+                    src: 'images/rolesCards/card_shirt.png',
+                    nickname: player.nickname
+                }
+            });
+        }
+
+        this.notifyPlayers('playersListUpdated', JSON.stringify({
+            payload: {
+                president: this.gameState.currentPresident,
+                role: 'Гитлер',
+                players: hilterList
+            }
+        }), player => player.isHitler);
+
+        for (let player of this.gameState.players) {
+            if (player.party !== Const.Party.Liberal) continue;
+            const list = this.getPlayersInfoList(p => {
+                if (player === p) {
                     return {
-                        src: 'views/images/rolesCards/card_shirt.png',
+                        src: player.src,
                         nickname: player.nickname
                     }
                 }
+                return {
+                    src: 'images/rolesCards/card_shirt.png',
+                    nickname: player.nickname
+                }
             });
-
             this.notifyPlayers('playersListUpdated', JSON.stringify({
                 payload: {
-                    players: hilterList
+                    president: this.gameState.currentPresident,
+                    role: 'Либерал',
+                    players: list
                 }
-            }), player => player.isHitler);
-
-            for (let player in this.gameState.players) {
-                if (player.party !== Const.Party.Liberal) continue;
-                const list = this.getPlayersInfoList(p => {
-                    if (player === p) {
-                        return {
-                            src: player.src,
-                            nickname: player.nickname
-                        }
-                        return {
-                            src: 'views/images/rolesCards/card_shirt.png',
-                            nickname: player.nickname
-                        }
-                    }
-                });
-                this.notifyPlayers('playersListUpdated', JSON.stringify({
-                    payload: {
-                        players: hilterList
-                    }
-                }), p => p === player);
-            }
+            }), p => p === player);
         }
     }
 }
