@@ -2,17 +2,17 @@ const socket = io(location.href);
 
 const playersContainer = document.querySelector('.players-container');
 
-function removeAllChildren(element){
+function removeAllChildren(element) {
     while (element.lastElementChild) {
         element.removeChild(element.lastElementChild);
     }
 }
 
-function createModalWindow(title){
+function createModalWindow(title) {
     const popup = document.createElement('div');
     popup.classList.add('popup');
     const popupBody = document.createElement('div');
-    popup.classList.add('popup-body');
+    popupBody.classList.add('popup-body');
     popup.appendChild(popupBody);
     const popupContent = document.createElement('form');
     popupContent.classList.add('popup-content');
@@ -23,11 +23,12 @@ function createModalWindow(title){
     popupContent.appendChild(popupTitle);
     const submit = document.createElement('input');
     submit.type = 'submit';
+    submit.classList.add('modal-window-submit');
     popupContent.appendChild(submit);
     return popup;
 }
 
-function createPlayerCard(player){
+function createPlayerCard(player) {
     const div = document.createElement('div');
     div.classList.add('player');
     const img = document.createElement('img');
@@ -41,16 +42,16 @@ function createPlayerCard(player){
     return div;
 }
 
-function createCardsModalWindow(cards, windowTitle, socketEventTag){
+function createCardsModalWindow(cards, windowTitle, socketEventTag) {
     const modalWindow = createModalWindow(windowTitle);
     const submit = modalWindow.querySelector('input[type=submit]');
     const cardsContainer = document.createElement('div');
     cardsContainer.classList.add('cards-container');
-    for (let law of cards){
+    for (let law of cards) {
         const radio = document.createElement('input');
         radio.type = 'radio';
         radio.required = true;
-        radio.name = 'choosenCard';
+        radio.name = 'chosenCard';
         radio.type = law.type;
         const img = document.createElement('img');
         img.src = law.src;
@@ -63,10 +64,12 @@ function createCardsModalWindow(cards, windowTitle, socketEventTag){
         const formData = new FormData(e.currentTarget);
         socket.emit(socketEventTag, JSON.stringify({
             payload: {
-                choosenLaw: formData.get('choosenCard');
+                chosenLaw: formData.get('chosenCard')
             }
         }));
     });
+
+    return modalWindow;
 }
 
 socket.emit('joinRoom', JSON.stringify({
@@ -78,7 +81,7 @@ socket.emit('joinRoom', JSON.stringify({
 socket.on('playersListUpdated', data => {
     const payload = JSON.parse(data).payload;
     removeAllChildren(playersContainer);
-    for (let player of payload.players){
+    for (let player of payload.players) {
         const playerCard = createPlayerCard(player);
         playersContainer.appendChild(playerCard);
     }
@@ -86,5 +89,9 @@ socket.on('playersListUpdated', data => {
 
 socket.on('choosingLaw', data => {
     const payload = JSON.parse(data).payload;
-
 })
+
+
+let c = createCardsModalWindow([], 'lol', 'bla');
+let d = document.querySelector('body');
+d.appendChild(c);
