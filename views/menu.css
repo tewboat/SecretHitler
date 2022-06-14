@@ -83,8 +83,8 @@ label {
 }
 
 .container .next-button {
-    color:#fff;
-    background-color:#e74c3c;
+    color: #fff;
+    background-color: #e74c3c;
     padding: 10px 30px;
     font-size: 24px;
     cursor: pointer;
@@ -118,13 +118,22 @@ form {
 
 /* button styles */
 .find-button, .create-button, .update-button {
-    color:#fff;
+    color: #fff;
     display: flex;
     margin: 5px 20px;
     padding: 10px 30px;
     font-size: 24px;
     cursor: pointer;
     border-radius: 7px 7px 7px 0;
+}
+
+.back-button {
+    color: #fff;
+    display: flex;
+    margin-left: -120%;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 7px 7px 7px 7px;
 }
 
 .create-button {
@@ -135,8 +144,12 @@ form {
     background-color: #94B88F;
 }
 
+.back-button {
+    background-color: #F1986C;
+}
+
 .password-container .enter-room-button {
-    color:#fff;
+    color: #fff;
     display: flex;
     margin: 5px 20px;
     padding: 10px 30px;
@@ -148,17 +161,19 @@ form {
     justify-content: center;
 }
 
-.find-button, .create-button, .next-button, .enter-button, .update-button {
+.find-button, .create-button, .next-button, .enter-button, .update-button, .back-button {
     box-shadow: 5px 5px #555555;
     transition: 0.5s;
 }
 
-.find-button:hover, .create-button:hover, .next-button:hover, .enter-button:hover, .update-button:hover {
+.find-button:hover, .create-button:hover, .next-button:hover, .enter-button:hover, .update-button:hover,
+.back-button:hover {
     box-shadow: 3px 3px #555555;
     transition: 0.5s;
 }
 
-.find-button:active, .create-button:active, .next-button:active, .enter-button:active, .update-button:active {
+.find-button:active, .create-button:active, .next-button:active, .enter-button:active, .update-button:active,
+.back-button:active {
     box-shadow: 1px 1px #555555;
 }
 
@@ -190,6 +205,7 @@ ul {
     margin-left: -10px;
     height: 200px;
     overflow: auto;
+    margin-top: 30px;
 }
 
 ul:empty {
@@ -220,8 +236,6 @@ li {
 }
 
 
-
-
 /*.input-player-count, .input-set-password, .input-room-name, .input-password, .create-room-button {*/
 /*    margin: 5px 20px;*/
 /*}*/
@@ -246,7 +260,6 @@ li {
 /*    font-family: Tahoma, serif;*/
 
 /*}*/
-
 
 
 /*.container input {*/
