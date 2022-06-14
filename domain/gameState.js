@@ -17,7 +17,7 @@ class GameState{
         this.currentChancellor = players[1];
         this.skipPawn = 0;
 
-        // TODO start game and mb add roles
+        // TODO start game
 
     }
 
@@ -61,17 +61,18 @@ class GameState{
         let srcFC = 1;
         let srcLC = 1;
         for(let i = 0; i < this.playersCount; i++) {
+            this.players[i].src = 'images/rolesCards/';
             if (this.players[i].party === undefined) {
                 this.players[i].party = types.Party.Liberal;
-                this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcLC + '.png';
+                this.players[i].src += this.players[i].party.toLowerCase() + '_' + srcLC + '.png';
                 srcLC++;
             }
             else{
                 if (this.players[i].isHitler){
-                    this.players[i].src = 'hitler.png'
+                    this.players[i].src += 'hitler.png'
                 }
                 else {
-                    this.players[i].src = this.players[i].party.toLowerCase() + '_' + srcFC + '.png';
+                    this.players[i].src += this.players[i].party.toLowerCase() + '_' + srcFC + '.png';
                     srcFC++;
                 }
             }
