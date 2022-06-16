@@ -71,16 +71,14 @@ class GameState {
         }
     }
 
+    // TODO ????
     updateSkipPawn(wasSkipped) {
         if (wasSkipped) {
             this.skipPawn++;
             if (this.skipPawn === 3) {
                 this.skipPawn = 0;
                 const law = this.getLaw(); // todo getLaw
-                this.notifyPlayers('lawChose', JSON.stringify({
-                    type: law.type,
-                    src: law.src
-                }), () => true);
+                this.adoptLaw(law)
                 setTimeout(() => this.nextMove(), 1000);
             } else{
                 this.notifyPlayers('skip', JSON.stringify({
@@ -173,7 +171,48 @@ class GameState {
         return this.votes.size === this.players.length;
     }
 
-    sendElectionResult() {
+    removeLaw(type){
+        for (let index in this.laws){
+            if (this.laws.type === type){
+                this.laws.splice(index, 1);
+                return;
+            }
+        }
+    }
+
+    presidentLawChoosing(){
+        this.laws = this.getLaws(); //TODO получить 3 закона
+        this.currentPresident.emit('presidentLawChoosing', JSON.stringify(
+            {
+                payload: {
+                    laws: this.laws
+                }
+            }
+        ));
+    }
+
+    chancellorLawChoosing(){
+        this.currentChancellor.emit('chancellorLawChoosing', JSON.stringify(
+            {
+                payload: {
+                    laws: this.laws
+                }
+            }
+        ))
+    }
+
+    adoptLaw(ignoreAction = false){
+        const law = this.laws[0];
+        // TODO добавить принятый закон на поле
+        this.notifyPlayers('lawAdopted', JSON.stringify({
+            law: law
+        }));
+        if (!ignoreAction) {
+            // TODO добавить отправку действия после принятия закона
+        }
+    }
+
+    onElectionResult() {
         let ja = 0;
         let nein = 0;
         for (let id in this.votes){
@@ -190,14 +229,15 @@ class GameState {
             payload: {
                 results: electionResults
             }
-        }), () => true);
+        }));
 
-        return; // todo
-
-        if (ja < nein){
-           this.updateSkipPawn(true);
-           //todo
-        }
+        setTimeout(() => {
+            if (ja > nein){
+                this.presidentLawChoosing();
+            } else {
+                this.updateSkipPawn(true);
+            }
+        }, 1000)
     }
 
     run() {

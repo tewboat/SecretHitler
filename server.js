@@ -156,9 +156,21 @@ io.on('connection', ws => {
 
         if (room.gameState.allVoted()) {
             console.log('all voted')
-            room.gameState.sendElectionResult();
+            room.gameState.onElectionResult();
         }
     });
+
+    ws.on('presidentLawChosen', data => {
+        const payload = JSON.parse(data).payload;
+        room.gameState.removeLaw(payload.type);
+        room.gameState.chancellorLawChoosing();
+    });
+
+    ws.on('chancellorLawChosen', data => {
+        const payload = JSON.parse(data).payload;
+        room.gameState.removeLaw(payload.type);
+        room.gameState.adoptLaw();
+    })
 
 
     ws.on('disconnect', () => {
