@@ -13,6 +13,7 @@ class Room {
         this.password = password;
         this.gameState = undefined;
         this.readyCount = 0;
+        this.gameStarted = false;
     }
 
     findBy(array, condition) {
@@ -47,6 +48,10 @@ class Room {
             this.readyCount--;
             this.players = newArray;
         }
+    }
+
+    isGameStarted(){
+        return this.gameStarted;
     }
 
     isAllReady() {
@@ -91,8 +96,7 @@ class Room {
     runGame() {
         if (this.players.length !== this.maxPlayersCount) {
             return;
-        }
-
+        }this.gameStarted = true;
         this.gameState = new GameState(this.maxPlayersCount, this.players);
         this.gameState.run();
     }

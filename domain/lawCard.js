@@ -9,10 +9,10 @@ class LawCard {
         }
         switch (cardType) {
             case types.Party.Fascist:
-                this.src = 'views/images/'; //TODO
+                this.src = 'images/lawCards/fascistLaw.png';
                 break;
             case types.Party.Liberal:
-                this.src = 'views/images/'; //TODO
+                this.src = 'views/images/liberalLaw';
                 break;
         }
     }

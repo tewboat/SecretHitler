@@ -2,6 +2,7 @@ const LawField = require('./lawField');
 const LawDeck = require('./lawDecks');
 const types = require('./constants');
 const Const = require("./constants");
+const e = require("express");
 
 class GameState {
     constructor(playersCount, players) {
@@ -71,22 +72,26 @@ class GameState {
     }
 
     updateSkipPawn(wasSkipped) {
-        if (wasSkipped === true) {
+        if (wasSkipped) {
             this.skipPawn++;
             if (this.skipPawn === 3) {
-                this.randomLawEvent();
                 this.skipPawn = 0;
+                const law = this.getLaw(); // todo getLaw
+                this.notifyPlayers('lawChose', JSON.stringify({
+                    type: law.type,
+                    src: law.src
+                }), () => true);
+                setTimeout(() => this.nextMove(), 1000);
+            } else{
+                this.notifyPlayers('skip', JSON.stringify({
+                    skipped: this.skipPawn
+                }), () => true);
+                setTimeout(() => this.electionEvent(), 1000);
             }
-        } else this.skipPawn = 0;
-        // TODO add skipPawn change on players
-    }
+        } else {
+            this.skipPawn = 0;
 
-    randomLawEvent() {
-
-    }
-
-    chooseChancellorEvent() {
-
+        }
     }
 
     electionEvent() {
@@ -110,7 +115,7 @@ class GameState {
     }
 
 
-    notifyPlayers(tag, message, selector) {
+    notifyPlayers(tag, message, selector=()=>true) {
         for (let player of this.players) {
             if (selector(player)) {
                 player.socket.emit(tag, message);
@@ -169,7 +174,30 @@ class GameState {
     }
 
     sendElectionResult() {
+        let ja = 0;
+        let nein = 0;
+        for (let id in this.votes){
+            ja += this.votes.get(id) === 'ja';
+            nein += this.votes.get(id) === 'nein';
+        }
 
+        const electionResults = [];
+        this.players.forEach(player => {
+           electionResults.push(this.votes.get(player.socketID));
+        });
+
+        this.notifyPlayers('electionResults', JSON.stringify({
+            payload: {
+                results: electionResults
+            }
+        }), () => true);
+
+        return; // todo
+
+        if (ja < nein){
+           this.updateSkipPawn(true);
+           //todo
+        }
     }
 
     run() {

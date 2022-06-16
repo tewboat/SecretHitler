@@ -47,7 +47,7 @@ function escape(string) {
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/views', 'menu.html'));
-})
+});
 
 app.post('/api/setName', (req, res) => {
     let nickname = escape(String(req.body.nickname));
@@ -57,21 +57,24 @@ app.post('/api/setName', (req, res) => {
     } else {
         res.sendStatus(422);
     }
-})
+});
 
 app.get('/api/getAllRooms', (req, res) => {
     const result = []
     rooms.forEach((value, key) => {
-        result.push({
-            id: key,
-            name: value.name,
-            password: value.password !== undefined,
-            playersCount: value.players.length,
-            maxPlayersCount: value.maxPlayersCount
-        })
-    })
+            if (!value.isGameStarted() && !value.isFull()) {
+                result.push({
+                    id: key,
+                    name: value.name,
+                    password: value.password !== undefined,
+                    playersCount: value.players.length,
+                    maxPlayersCount: value.maxPlayersCount
+                })
+            }
+        }
+    );
     res.json(result);
-})
+});
 
 app.post('/enter', (req, res) => {
     const id = req.body.id;
@@ -114,7 +117,7 @@ io.on('connection', ws => {
     const roomId = ws.handshake.query.id;
     const room = rooms.get(roomId);
 
-    if (room === undefined){
+    if (room === undefined) {
         ws.disconnect();
         return;
     }
@@ -136,21 +139,32 @@ io.on('connection', ws => {
     });
 
     ws.on('ready', () => {
-        if (room.setReady(ws.id)){
+        if (room.setReady(ws.id)) {
             setTimeout(() => room.runGame(), gameDelay);
         }
     });
 
     ws.on('chancellorElected', data => {
         const payload = JSON.parse(data).payload;
-        
+        room.gameState.setChancellor(payload.id);
+        room.gameState.voting();
     })
+
+    ws.on('voted', data => {
+        const payload = JSON.parse(data).payload;
+        room.gameState.setVote(ws.id, payload.value);
+
+        if (room.gameState.allVoted()) {
+            console.log('all voted')
+            room.gameState.sendElectionResult();
+        }
+    });
 
 
     ws.on('disconnect', () => {
         console.log('disconnected')
         room.removePlayer(ws.id);
-        if (room.players.length === 0){
+        if (room.players.length === 0) {
             rooms.delete(room.id);
             return;
         }

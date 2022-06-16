@@ -42,7 +42,7 @@ function createPlayerCard(player) {
     const img = document.createElement('img');
     img.src = player.src || defaultPlayerImage;
     img.alt = 'Role card shirt';
-    img.classList.add('role-card');
+    img.classList.add('card');
     div.appendChild(img);
     const name = document.createElement('strong');
     name.innerText = player.nickname;
@@ -56,16 +56,18 @@ function createCardsModalWindow(cards, windowTitle, socketEventTag) {
     modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
     const cardsContainer = document.createElement('div');
     cardsContainer.classList.add('cards-container');
-    for (let law of cards) {
+    for (let card of cards) {
         const radio = document.createElement('input');
         radio.type = 'radio';
         radio.required = true;
         radio.name = 'chosenCard';
-        radio.value = law.type;
+        radio.value = card.type;
         const img = document.createElement('img');
-        img.src = law.src;
-        radio.appendChild(img);
-        cardsContainer.appendChild(radio);
+        img.src = card.src;
+        img.classList.add('card');
+        const label = document.createElement('label');
+        label.append(radio, img);
+        cardsContainer.appendChild(label);
     }
     modalWindowForm.querySelector('.modal-window-submit').before(cardsContainer);
 
@@ -75,9 +77,10 @@ function createCardsModalWindow(cards, windowTitle, socketEventTag) {
         const formData = new FormData(e.currentTarget);
         socket.emit(socketEventTag, JSON.stringify({
             payload: {
-                chosenLaw: formData.get('chosenCard')
+                value: formData.get('chosenCard')
             }
         }));
+        document.body.removeChild(modalWindow);
     });
 
     return modalWindow;
@@ -206,8 +209,40 @@ socket.on('chancellorElection', data => {
     document.body.appendChild(modalWindow);
 });
 
+socket.on('electionResults', data => {
+
+});
+
+socket.on('voting', data => {
+    const payload = JSON.parse(data).payload;
+    const cardModalWindow = createCardsModalWindow(
+        [
+            {
+                type: 'ja',
+                src: 'images/votingCards/ja.png'
+            },
+            {
+                type: 'nein',
+                src: 'images/votingCards/nein.png'
+            }
+        ], `Проголосуйте за назначение игрока ${payload.chancellorNickname} канцлером`,
+        'voted'
+    );
+    document.body.appendChild(cardModalWindow);
+});
+
 socket.on('choosingLaw', data => {
     const payload = JSON.parse(data).payload;
+});
+
+socket.on('skip', data => {
+    const payload = JSON.parse(data).payload;
+    //TODO установить пропущенные ходы payload.skipped
+})
+
+socket.on('lawChose', data => {
+   const payload = JSON.parse(data).payload;
+   // todo вставить карточку в поле
 });
 
 socket.on('readinessСheck', () => {
