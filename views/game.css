@@ -41,7 +41,7 @@
 
 body {
     min-height: 100%;
-    background-color: #C9CBCD;
+    background-color: #D4D1D0;
 }
 
 .fascist tr, .fascist td {
@@ -106,7 +106,7 @@ caption {
 .fascist-field, .liberal-field {
     display: flex;
     flex-direction: column;
-    margin-top: 5%;
+    margin-top: 3%;
     margin-left: 2%;
     margin-bottom: -2%;
     border: 2px double;
@@ -116,10 +116,10 @@ caption {
 .take-cards, .discard-cards {
     display: flex;
     flex-direction: column;
-    margin-top: 5%;
+    margin-top: 3%;
     margin-left: 2%;
     margin-bottom: -2%;
-    justify-content: center
+    justify-content: center;
 }
 
 .take-cards {
@@ -212,7 +212,6 @@ aside {
     right: 0;
     top: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
 }
 
 /*.popup-body {*/
@@ -229,7 +228,13 @@ aside {
     align-self: auto;
     width: 30%;
     min-height: 250px;
-    background: white;
+    background: #BBBBBB;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid black;
 }
 
 /*.popup-content {*/
@@ -239,8 +244,19 @@ aside {
 /*    padding: 30px;*/
 /*}*/
 
+.election-list {
+    list-style: none;
+}
+
+h4, p {
+    font-family: 'Roboto', sans-serif;
+}
+
 .modal-window-submit {
-    color:#fff;
+    background-color: #94B88F;
+    box-shadow: 5px 5px #555555;
+    transition: 0.5s;
+    color: #fff;
     display: flex;
     margin: 5px 20px;
     padding: 10px 30px;
@@ -249,6 +265,18 @@ aside {
     border-radius: 7px 7px 7px 0;
 }
 
-.election-list {
-    list-style: none;
+.modal-window-submit:hover {
+    box-shadow: 3px 3px #555555;
+    transition: 0.5s;
 }
+
+.modal-window-submit:active {
+    box-shadow: 1px 1px #555555;
+}
+
+ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
