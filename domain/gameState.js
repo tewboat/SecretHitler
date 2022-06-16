@@ -87,7 +87,7 @@ class GameState {
         return playersInfo;
     }
 
-    sendPlayersGameList(){
+    sendPlayersGameList() {
         const fascistList = this.getPlayersInfoList(player => {
             return {
                 role: player.role,
@@ -143,7 +143,7 @@ class GameState {
                     }
                 }
                 return {
-                    role: player.role,
+                    role: p.role,
                     src: 'images/rolesCards/card_shirt.png',
                     nickname: p.nickname
                 }
@@ -259,16 +259,16 @@ class GameState {
     removeLaw(type) {
         for (let i = 0; i < this.laws.length; i++) {
             if (this.laws[i].type === type) {
-                this.laws.splice(i, 1);
                 this.decks.discardCard(this.laws[i]);
+                this.laws.splice(i, 1);
                 return;
             }
         }
     }
 
-    getLaws(num){
+    getLaws(num) {
         const laws = [];
-        for (let i = 0; i < num; i++){
+        for (let i = 0; i < num; i++) {
             laws.push(this.decks.getTopCard());
         }
         return laws;
@@ -298,8 +298,19 @@ class GameState {
     adoptLaw(law, ignoreAction = false) {
         this.field.addLaw(law);
         this.notifyPlayers('lawAdopted', JSON.stringify({
-            law: law
+            payload: {
+                fascistField: this.field.fascistField.lawCount,
+                liberalField: this.field.liberalField.lawCount
+            }
         }));
+
+        return;
+
+        if (law.type === types.Party.Liberal) {
+            this.nextMove();
+            return;
+        }
+
         if (!ignoreAction) {
             setTimeout(() => {
                 this.currentPresident.socket.emit('action', JSON.stringify({

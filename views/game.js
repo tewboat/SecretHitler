@@ -226,7 +226,25 @@ socket.on('skip', data => {
 
 socket.on('lawAdopted', data => {
     const payload = JSON.parse(data).payload;
-    // todo вставить карточку в поле
+    for (let i = 1; i <= payload.fascistField; i++){
+        const field = document.body.querySelector(`#f${i}`);
+        removeAllChildren(field);
+        const img = document.createElement('img');
+        img.src = 'images/lawCards/fascistLaw.png';
+        img.alt = 'Фашистский закон';
+        img.classList.add('card');
+        field.appendChild(img);
+    }
+
+    for (let i = 1; i <= payload.liberalField; i++){
+        const field = document.body.querySelector(`#l${i}`);
+        removeAllChildren(field);
+        const img = document.createElement('img');
+        img.src = 'images/lawCards/liberalLaw.png';
+        img.alt = 'Либеральный закон';
+        img.classList.add('card');
+        field.appendChild(img);
+    }
 });
 
 socket.on();

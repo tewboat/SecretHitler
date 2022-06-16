@@ -155,7 +155,6 @@ io.on('connection', ws => {
         room.gameState.setVote(ws.id, payload.value);
 
         if (room.gameState.allVoted()) {
-            console.log('all voted')
             room.gameState.onElectionResult();
         }
     });
