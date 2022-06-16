@@ -16,7 +16,8 @@ class GameState {
         this.lastChancellor = null;
 
         this.currentPresident = players[0];
-        this.currentChancellor = players[1];
+        this.currentPresident.role = Const.Role.President;
+        this.currentChancellor = null;
         this.skipPawn = 0;
     }
 
@@ -143,7 +144,7 @@ class GameState {
                     }
                 }
                 return {
-                    role: player.role,
+                    role: p.role,
                     src: 'images/rolesCards/card_shirt.png',
                     nickname: p.nickname
                 }
@@ -211,6 +212,7 @@ class GameState {
         for (let player of this.players) {
             if (player.socketID === id) {
                 this.currentChancellor = player;
+                this.currentChancellor.role = Const.Role.Chancellor;
                 return;
             }
         }
