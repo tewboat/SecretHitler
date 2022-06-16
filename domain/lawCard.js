@@ -12,7 +12,7 @@ class LawCard {
                 this.src = 'images/lawCards/fascistLaw.png';
                 break;
             case types.Party.Liberal:
-                this.src = 'views/images/liberalLaw';
+                this.src = 'images/lawCards/liberalLaw.png';
                 break;
         }
     }

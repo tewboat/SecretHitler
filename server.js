@@ -162,13 +162,13 @@ io.on('connection', ws => {
 
     ws.on('presidentLawChosen', data => {
         const payload = JSON.parse(data).payload;
-        room.gameState.removeLaw(payload.type);
+        room.gameState.removeLaw(payload.value);
         room.gameState.chancellorLawChoosing();
     });
 
     ws.on('chancellorLawChosen', data => {
         const payload = JSON.parse(data).payload;
-        room.gameState.removeLaw(payload.type);
+        room.gameState.removeLaw(payload.value);
         room.gameState.adoptLaw(room.gameState.laws[0]);
     })
 
