@@ -31,7 +31,7 @@
     align-items: center;
 }
 
-.role-card {
+.card {
     width: 30%;
 }
 
@@ -247,4 +247,8 @@ aside {
     font-size: 24px;
     cursor: pointer;
     border-radius: 7px 7px 7px 0;
+}
+
+.election-list {
+    list-style: none;
 }
