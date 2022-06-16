@@ -24,7 +24,7 @@ function createModalWindow() {
 function createModalWindowForm(title) {
     const popupContent = document.createElement('form');
     popupContent.classList.add('popup-content');
-    const popupTitle = document.createElement('div');
+    const popupTitle = document.createElement('h4');
     popupTitle.innerText = title;
     popupTitle.classList.add('popup-title');
     popupContent.appendChild(popupTitle);
@@ -44,6 +44,18 @@ function createPlayerCard(player) {
     img.alt = 'Role card shirt';
     img.classList.add('card');
     div.appendChild(img);
+    if (player.role === 'President' || player.role === 'Chancellor') {
+        const role = document.createElement('img');
+        if (player.role === 'President') {
+            role.src = 'images/rolesCards/president.png'
+        }
+        else {
+            role.src = 'images/rolesCards/chancellor.png'
+        }
+        role.alt = `${player.role}`;
+        role.classList.add('card');
+        div.appendChild(role);
+    }
     const name = document.createElement('strong');
     name.innerText = player.nickname;
     div.appendChild(name);
@@ -89,7 +101,7 @@ function showCardsModalWindow(cards, windowTitle, socketEventTag) {
 function showReadyCheckModalWindow() {
     const modalWindow = createModalWindow();
     const modalWindowBody = modalWindow.querySelector('.popup-body');
-    const title = document.createElement('div');
+    const title = document.createElement('h4');
     title.classList.add('popup-title');
     title.innerText = 'Подтвердите готовность';
     modalWindowBody.appendChild(title);
@@ -168,7 +180,6 @@ socket.on('playersListUpdated', data => {
 socket.on('start', data => {
     const payload = JSON.parse(data).payload;
     const players = payload.players;
-
     updatePlayersList(players);
     const modalWindow = createModalWindow();
     const title = document.createElement('h4');
@@ -179,6 +190,7 @@ socket.on('start', data => {
     president.innerText = `Президентом назначен ${payload.president}`;
     modalWindow.querySelector('.popup-body').append(title, role, president);
     document.body.appendChild(modalWindow);
+
     setTimeout(() => document.body.removeChild(modalWindow), 5000);
 });
 
