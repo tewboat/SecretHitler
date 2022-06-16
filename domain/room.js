@@ -87,13 +87,6 @@ class Room {
         return players;
     }
 
-    getPlayersInfoList(selector) {
-        const playersInfo = [];
-        for (let player of this.gameState.players) {
-            playersInfo.push(selector(player));
-        }
-        return playersInfo;
-    }
 
     runGame() {
         if (this.players.length !== this.maxPlayersCount) {
@@ -101,69 +94,7 @@ class Room {
         }
 
         this.gameState = new GameState(this.maxPlayersCount, this.players);
-        const fascistList = this.getPlayersInfoList(player => {
-            return {
-                src: player.src,
-                nickname: player.nickname
-            }
-        });
-
-        this.notifyPlayers('start', JSON.stringify({
-            payload: {
-                president: this.gameState.currentPresident.nickname,
-                role: 'Фашист',
-                players: fascistList
-            }
-        }), player => player.party === Const.Party.Fascist);
-
-        let hilterList;
-        if (this.maxPlayersCount <= 6) {
-            hilterList = fascistList;
-        } else {
-            hilterList = this.getPlayersInfoList(player => {
-                if (player.isHitler) {
-                    return {
-                        src: player.src,
-                        nickname: player.nickname
-                    }
-                }
-                return {
-                    src: 'images/rolesCards/card_shirt.png',
-                    nickname: player.nickname
-                }
-            });
-        }
-
-        this.notifyPlayers('start', JSON.stringify({
-            payload: {
-                president: this.gameState.currentPresident.nickname,
-                role: 'Гитлер',
-                players: hilterList
-            }
-        }), player => player.isHitler);
-
-        for (let player of this.gameState.players) {
-            if (player.party !== Const.Party.Liberal) continue;
-            const list = this.getPlayersInfoList(p => {
-                if (player === p) {
-                    return {
-                        src: player.src,
-                        nickname: player.nickname
-                    }
-                }
-                return {
-                    src: 'images/rolesCards/card_shirt.png',
-                    nickname: player.nickname
-                }
-            });
-            this.notifyPlayers('start', JSON.stringify({
-                payload: {
-                    president: this.gameState.currentPresident.nickname,
-                    role: 'Либерал',
-                    players: list
-                }
-            }), p => p === player);
-        }
+        this.gameState.run();
     }
 }
 

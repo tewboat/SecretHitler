@@ -215,3 +215,7 @@ aside {
     cursor: pointer;
     border-radius: 7px 7px 7px 0;
 }
+
+.election-list {
+    list-style: none;
+}

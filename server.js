@@ -108,6 +108,8 @@ app.post('/api/createRoom', (req, res) => {
     res.json({id: room.id});
 });
 
+const gameDelay = 1000;
+
 io.on('connection', ws => {
     const roomId = ws.handshake.query.id;
     const room = rooms.get(roomId);
@@ -125,7 +127,7 @@ io.on('connection', ws => {
             payload: {
                 players: players
             }
-        }), e => true);
+        }), _ => true);
 
         if (room.players.length === room.maxPlayersCount) {
             room.notifyPlayers('readinessСheck', null, () => true);
@@ -134,13 +136,15 @@ io.on('connection', ws => {
 
     ws.on('ready', () => {
         if (room.setReady(ws.id)){
-            setTimeout(() => room.runGame(), 1000);
+            setTimeout(() => room.runGame(), gameDelay);
         }
     });
 
-    ws.on('lawChoosen', msg => {
+    ws.on('chancellorElected', data => {
+        const payload = JSON.parse(data).payload;
+        
+    })
 
-    });
 
     ws.on('disconnect', () => {
         console.log('disconnected')

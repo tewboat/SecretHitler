@@ -28,6 +28,7 @@ function createModalWindowForm(title) {
     popupContent.appendChild(popupTitle);
     const submit = document.createElement('input');
     submit.type = 'submit';
+    submit.value = 'Принять';
     submit.classList.add('modal-window-submit');
     popupContent.appendChild(submit);
     return popupContent;
@@ -58,11 +59,13 @@ function createCardsModalWindow(cards, windowTitle, socketEventTag) {
         radio.type = 'radio';
         radio.required = true;
         radio.name = 'chosenCard';
-        radio.type = law.type;
+        radio.value = law.type;
         const img = document.createElement('img');
         img.src = law.src;
+        radio.appendChild(img);
         cardsContainer.appendChild(radio);
     }
+    modalWindowForm.querySelector('.modal-window-submit').before(cardsContainer);
 
     const form = modalWindow.querySelector('.popup-content');
     form.addEventListener('submit', e => {
@@ -101,7 +104,44 @@ function createReadyCheckModalWindow() {
     return modalWindow;
 }
 
-function updatePlayersList(players){
+function createElectionModalWindow(players) {
+    const modalWindow = createModalWindow();
+    const modalWindowForm = createModalWindowForm('Выберите кандидата в канцлеры');
+    modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
+    const submit = modalWindowForm.querySelector('.modal-window-submit');
+    const container = document.createElement('ul');
+    container.classList.add('election-list');
+    for (let player of players) {
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'chosenPlayerId';
+        radio.id = player.id;
+        radio.value = player.id;
+        radio.required = true;
+        const label = document.createElement('label');
+        label.htmlFor = player.id;
+        label.innerText = player.nickname;
+        const li = document.createElement('li');
+        li.append(radio, label);
+        container.append(li);
+    }
+    submit.before(container);
+    modalWindowForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+
+        socket.emit('chancellorElected', JSON.stringify({
+            payload: {
+                id: formData.get('chosenPlayerId')
+            }
+        }));
+        document.body.removeChild(modalWindow);
+    });
+
+    return modalWindow;
+}
+
+function updatePlayersList(players) {
     removeAllChildren(playersContainer);
     for (let player of players) {
         const playerCard = createPlayerCard(player);
@@ -133,6 +173,12 @@ socket.on('start', data => {
     modalWindow.querySelector('.popup-body').append(title, role, president);
     document.body.appendChild(modalWindow);
     setTimeout(() => document.body.removeChild(modalWindow), 5000);
+});
+
+socket.on('chancellorElection', data => {
+    const payload = JSON.parse(data).payload;
+    const modalWindow = createElectionModalWindow(payload.players);
+    document.body.appendChild(modalWindow);
 });
 
 socket.on('choosingLaw', data => {
