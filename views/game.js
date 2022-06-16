@@ -74,9 +74,10 @@ function showCardsModalWindow(cards, windowTitle, socketEventTag) {
         radio.required = true;
         radio.name = 'chosenCard';
         radio.value = card.type;
+        radio.classList.add('choice-radio');
         const img = document.createElement('img');
         img.src = card.src;
-        img.classList.add('card');
+        img.classList.add('vote-card');
         const label = document.createElement('label');
         label.append(radio, img);
         cardsContainer.appendChild(label);
