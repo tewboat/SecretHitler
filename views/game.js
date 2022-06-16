@@ -44,6 +44,18 @@ function createPlayerCard(player) {
     img.alt = 'Role card shirt';
     img.classList.add('card');
     div.appendChild(img);
+    if (player.role === 'President' || player.role === 'Chancellor') {
+        const role = document.createElement('img');
+        if (player.role === 'President') {
+            role.src = 'images/rolesCards/president.png'
+        }
+        else {
+            role.src = 'images/rolesCards/chancellor.png'
+        }
+        role.alt = `${player.role}`;
+        role.classList.add('card');
+        div.appendChild(role);
+    }
     const name = document.createElement('strong');
     name.innerText = player.nickname;
     div.appendChild(name);
