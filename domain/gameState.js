@@ -137,7 +137,7 @@ class GameState {
             const list = this.getPlayersInfoList(p => {
                 if (player === p) {
                     return {
-                        role: player.role,
+                        role: p.role,
                         src: p.src,
                         nickname: p.nickname
                     }
@@ -257,10 +257,10 @@ class GameState {
     }
 
     removeLaw(type) {
-        for (let index in this.laws) {
-            if (this.laws[index].type === type) {
-                this.laws.splice(index, 1);
-                this.decks.discardCard(this.laws[index]);
+        for (let i = 0; i < this.laws.length; i++) {
+            if (this.laws[i].type === type) {
+                this.laws.splice(i, 1);
+                this.decks.discardCard(this.laws[i]);
                 return;
             }
         }
@@ -276,7 +276,7 @@ class GameState {
 
     presidentLawChoosing() {
         this.laws = this.getLaws(3);
-        this.currentPresident.emit('presidentLawChoosing', JSON.stringify(
+        this.currentPresident.socket.emit('presidentLawChoosing', JSON.stringify(
             {
                 payload: {
                     laws: this.laws
@@ -286,7 +286,7 @@ class GameState {
     }
 
     chancellorLawChoosing() {
-        this.currentChancellor.emit('chancellorLawChoosing', JSON.stringify(
+        this.currentChancellor.socket.emit('chancellorLawChoosing', JSON.stringify(
             {
                 payload: {
                     laws: this.laws
@@ -302,7 +302,7 @@ class GameState {
         }));
         if (!ignoreAction) {
             setTimeout(() => {
-                this.currentPresident.emit('action', JSON.stringify({
+                this.currentPresident.socket.emit('action', JSON.stringify({
                     payload: {
                         action: 'kill' // TODO
                     }

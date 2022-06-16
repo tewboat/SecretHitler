@@ -28,7 +28,7 @@ class FascistField {
 
 
     getNextEvent(){
-        this.events[this.iterator++]();
+        // TODO fix this.events[this.iterator++]();
     }
 
     showDeck() {

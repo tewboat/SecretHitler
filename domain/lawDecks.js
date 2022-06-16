@@ -1,5 +1,5 @@
 const types = require('./constants');
-const Card = require('./lawCard.js');
+const LawCard = require("./lawCard");
 
 class LawDecks{
     constructor(){
@@ -10,11 +10,11 @@ class LawDecks{
 
     generateDeck(){
         for(let i = 0; i < 11; i++){
-            this.mainDeck.push(new Card(types.Party.Fascist));
+            this.mainDeck.push(new LawCard(types.Party.Fascist));
         }
 
         for(let i = 0; i < 6; i++){
-            this.mainDeck.push(new Card(types.Party.Liberal));
+            this.mainDeck.push(new LawCard(types.Party.Liberal));
         }
 
         this.shuffleArray(this.mainDeck);
@@ -48,7 +48,7 @@ class LawDecks{
     }
 
     discardCard(card){
-        if (card instanceof Card)
+        if (card instanceof LawCard)
             this.discard.push(card);
         else throw new Error('invalid cardType to discard');
     }
