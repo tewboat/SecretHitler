@@ -1,7 +1,5 @@
 const types = require('./constants');
 
-//TODO do we really need role?
-
 class Player{
     constructor(nickname, socket){
         this.socket = socket;
@@ -10,7 +8,7 @@ class Player{
         this.role = types.Role.Player;
         this.party = undefined;
         this.isHitler = false;
-        this.src = undefined;
+        this.src = 'images/rolesCards/card_shirt.png';
         this.ready = false;
     }
 }

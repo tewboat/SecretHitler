@@ -50,7 +50,7 @@ function createPlayerCard(player) {
     return div;
 }
 
-function createCardsModalWindow(cards, windowTitle, socketEventTag) {
+function showCardsModalWindow(cards, windowTitle, socketEventTag) {
     const modalWindow = createModalWindow();
     const modalWindowForm = createModalWindowForm(windowTitle);
     modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
@@ -83,10 +83,10 @@ function createCardsModalWindow(cards, windowTitle, socketEventTag) {
         document.body.removeChild(modalWindow);
     });
 
-    return modalWindow;
+    document.body.appendChild(modalWindow);
 }
 
-function createReadyCheckModalWindow() {
+function showReadyCheckModalWindow() {
     const modalWindow = createModalWindow();
     const modalWindowBody = modalWindow.querySelector('.popup-body');
     const title = document.createElement('div');
@@ -106,7 +106,7 @@ function createReadyCheckModalWindow() {
         document.body.removeChild(modalWindow);
     });
     modalWindowBody.appendChild(button);
-    return modalWindow;
+    document.body.appendChild(modalWindow);
 }
 
 function createElectionModalWindow(players) {
@@ -162,27 +162,6 @@ socket.emit('joinRoom', JSON.stringify({
 
 socket.on('playersListUpdated', data => {
     const payload = JSON.parse(data).payload;
-    if (!fieldGenerated) {
-        const maxPlayersCount = payload.maxPlayersCount;
-        const table = document.querySelector('.fascist');
-        table.style.width = '318px';
-        if (maxPlayersCount >= 7) {
-            const f3 = document.getElementById('f3');
-            const f2 = document.createElement('td');
-            f2.id = 'f2';
-            f3.before(f2);
-            table.style.width = '394px';
-        }
-        if (maxPlayersCount >= 9) {
-            const f2 = document.getElementById('f2');
-            const f1 = document.createElement('td');
-            f1.id = 'f1';
-            f2.before(f1);
-            table.style.width = '470px';
-        }
-
-        fieldGenerated = true;
-    }
     updatePlayersList(payload.players);
 });
 
@@ -210,12 +189,12 @@ socket.on('chancellorElection', data => {
 });
 
 socket.on('electionResults', data => {
-
+    // todo вывод результатов голосования, перекрасить ход выборов и изменить табличку канцлера
 });
 
 socket.on('voting', data => {
     const payload = JSON.parse(data).payload;
-    const cardModalWindow = createCardsModalWindow(
+    showCardsModalWindow(
         [
             {
                 type: 'ja',
@@ -228,24 +207,30 @@ socket.on('voting', data => {
         ], `Проголосуйте за назначение игрока ${payload.chancellorNickname} канцлером`,
         'voted'
     );
-    document.body.appendChild(cardModalWindow);
 });
 
-socket.on('choosingLaw', data => {
+socket.on('presidentLawChoosing', data => {
     const payload = JSON.parse(data).payload;
+    showCardsModalWindow(payload.laws, 'Выберите закон для сброса', 'presidentLawChosen');
+});
+
+socket.on('chancellorLawChoosing', data => {
+    const payload = JSON.parse(data).payload;
+    showCardsModalWindow(payload.laws, 'Выберите закон для сброса', 'chancellorLawChosen');
 });
 
 socket.on('skip', data => {
     const payload = JSON.parse(data).payload;
     //TODO установить пропущенные ходы payload.skipped
-})
-
-socket.on('lawChose', data => {
-   const payload = JSON.parse(data).payload;
-   // todo вставить карточку в поле
 });
 
+socket.on('lawAdopted', data => {
+    const payload = JSON.parse(data).payload;
+    // todo вставить карточку в поле
+});
+
+socket.on();
+
 socket.on('readinessСheck', () => {
-    const modalWindow = createReadyCheckModalWindow();
-    document.body.appendChild(modalWindow);
+    showReadyCheckModalWindow();
 });
