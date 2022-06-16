@@ -3,7 +3,7 @@ const types = require('./constants');
 class FascistField {
     constructor(playerCount) {
         //this.playerCount = playerCount;
-        this.iterator = 0;
+        this.lawCount = 0;
         if (playerCount === 5 || playerCount === 6) {
             this.events = [
                 null,
@@ -28,6 +28,7 @@ class FascistField {
 
 
     getNextEvent(){
+        this.lawCount++;
         // TODO fix this.events[this.iterator++]();
     }
 
@@ -80,7 +81,7 @@ class LawsField {
     }
 
     addLaw(law) {
-        if (law === types.Party.Liberal) {
+        if (law.type === types.Party.Liberal) {
             this.liberalField.getNextEvent();
         } else {
             this.fascistField.getNextEvent();
