@@ -6,6 +6,8 @@
 }
 
 .cards-container {
+    padding-top: 10px;
+    padding-left: 5px;
     display: flex;
 }
 
@@ -35,8 +37,17 @@
     width: 30%;
 }
 
+.vote-card {
+    width: 60%;
+}
+
 .low {
-    width: 50%;
+    width: 60%;
+}
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 body {
@@ -73,7 +84,6 @@ body {
     display: flex;
     flex-direction: column;
     margin-top: 5%;
-    margin-left: 40%;
     border: 2px solid darkolivegreen;
     width: max-content;
     font-family: 'Roboto', sans-serif;
@@ -188,6 +198,7 @@ aside {
 
 .fields {
     display: flex;
+    justify-content: center;
 }
 
 
@@ -272,6 +283,8 @@ h4, p {
 
 .modal-window-submit:active {
     box-shadow: 1px 1px #555555;
+    border: 2px solid #555555;
+    transition: 0.3s;
 }
 
 ul {
@@ -280,3 +293,19 @@ ul {
     font-family: 'Roboto', sans-serif;
 }
 
+.choice-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.choice-radio + img {
+    cursor: pointer;
+}
+
+.choice-radio:checked + img {
+    outline: 3px solid #343231;
+    border-radius: 5%;
+    transition: 0.3s outline-color;
+}
