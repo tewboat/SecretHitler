@@ -169,7 +169,7 @@ io.on('connection', ws => {
     ws.on('chancellorLawChosen', data => {
         const payload = JSON.parse(data).payload;
         room.gameState.removeLaw(payload.type);
-        room.gameState.adoptLaw();
+        room.gameState.adoptLaw(room.gameState.laws[0]);
     })
 
 
@@ -180,12 +180,16 @@ io.on('connection', ws => {
             rooms.delete(room.id);
             return;
         }
-        const players = room.getPlayersList();
-        room.notifyPlayers('playersListUpdated', JSON.stringify({
-            payload: {
-                players: players
-            }
-        }), () => true);
+        if (room.isGameStarted()) {
+            room.gameState.sendPlayersGameList();
+        } else {
+            const players = room.getPlayersList();
+            room.notifyPlayers('playersListUpdated', JSON.stringify({
+                payload: {
+                    players: players
+                }
+            }), () => true);
+        }
     });
 });
 
