@@ -4,6 +4,8 @@ const playersContainer = document.querySelector('.players-container');
 
 const defaultPlayerImage = 'images/rolesCards/card_shirt.png';
 
+let fieldGenerated = false;
+
 function removeAllChildren(element) {
     while (element.lastElementChild) {
         element.removeChild(element.lastElementChild);
@@ -157,12 +159,35 @@ socket.emit('joinRoom', JSON.stringify({
 
 socket.on('playersListUpdated', data => {
     const payload = JSON.parse(data).payload;
+    if (!fieldGenerated) {
+        const maxPlayersCount = payload.maxPlayersCount;
+        const table = document.querySelector('.fascist');
+        table.style.width = '318px';
+        if (maxPlayersCount >= 7) {
+            const f3 = document.getElementById('f3');
+            const f2 = document.createElement('td');
+            f2.id = 'f2';
+            f3.before(f2);
+            table.style.width = '394px';
+        }
+        if (maxPlayersCount >= 9) {
+            const f2 = document.getElementById('f2');
+            const f1 = document.createElement('td');
+            f1.id = 'f1';
+            f2.before(f1);
+            table.style.width = '470px';
+        }
+
+        fieldGenerated = true;
+    }
     updatePlayersList(payload.players);
 });
 
 socket.on('start', data => {
     const payload = JSON.parse(data).payload;
-    updatePlayersList(payload.players);
+    const players = payload.players;
+
+    updatePlayersList(players);
     const modalWindow = createModalWindow();
     const title = document.createElement('h4');
     title.innerText = 'Ваша роль';
