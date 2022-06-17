@@ -250,7 +250,9 @@ class GameState {
                     setTimeout(() => this.nextMove(), 1000);
                 } else {
                     this.notifyPlayers('skip', JSON.stringify({
-                        skipped: this.skipPawn
+                        payload: {
+                            skipped: this.skipPawn
+                        }
                     }), () => true);
                     setTimeout(() => this.electionEvent(), 1000);
                 }
