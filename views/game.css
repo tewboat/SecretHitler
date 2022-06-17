@@ -34,6 +34,11 @@
 }
 
 .card {
+    width: 65px;
+    height: 93px;
+}
+
+.role-card, .vote {
     width: 30%;
 }
 
@@ -73,12 +78,28 @@ body {
 }
 
 .fascist {
-    width: 470px;
+    border: 5px solid #FF8630;
+    width: 75px;
+    height: 102px;
+    background: #F39D47;
+    border-radius: 10px;
 }
 
 .liberal {
-    width: 395px;
+    border: 5px solid dodgerblue;
+    width: 75px;
+    height: 102px;
+    background: #309CFB;
+    border-radius: 10px;
 }
+
+/*.fascist {*/
+/*    width: 470px;*/
+/*}*/
+
+/*.liberal {*/
+/*    width: 395px;*/
+/*}*/
 
 .vote-progress {
     display: flex;
@@ -114,13 +135,19 @@ caption {
 }
 
 .fascist-field, .liberal-field {
-    display: flex;
-    flex-direction: column;
     margin-top: 3%;
     margin-left: 2%;
     margin-bottom: -2%;
     border: 2px double;
-    width: max-content;
+
+}
+
+.fascist-field {
+    width: 550px;
+}
+
+.liberal-field {
+    width: 475px;
 }
 
 .take-cards, .discard-cards {
@@ -199,6 +226,13 @@ aside {
 .fields {
     display: flex;
     justify-content: center;
+}
+
+.cards {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 

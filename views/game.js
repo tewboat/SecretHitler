@@ -42,18 +42,17 @@ function createPlayerCard(player) {
     const img = document.createElement('img');
     img.src = player.src || defaultPlayerImage;
     img.alt = 'Role card shirt';
-    img.classList.add('card');
+    img.classList.add('role-card');
     div.appendChild(img);
     if (player.role === 'President' || player.role === 'Chancellor') {
         const role = document.createElement('img');
         if (player.role === 'President') {
             role.src = 'images/rolesCards/president.png'
-        }
-        else {
+        } else {
             role.src = 'images/rolesCards/chancellor.png'
         }
         role.alt = `${player.role}`;
-        role.classList.add('card');
+        role.classList.add('role-card');
         div.appendChild(role);
     }
     const name = document.createElement('strong');
@@ -202,6 +201,28 @@ socket.on('chancellorElection', data => {
 });
 
 socket.on('electionResults', data => {
+    const results = JSON.parse(data).payload.results;
+    const players = document.querySelectorAll('.player');
+    for (let i = 0; i < players.length; i++) {
+        const vote = document.createElement('img');
+        vote.classList.add('vote');
+        if (results[i] === 'ja') {
+            vote.src = 'images/votingCards/ja.png';
+            vote.alt = 'ja-vote';
+        }
+        else {
+            vote.src = 'images/votingCards/nein.png';
+            vote.alt = 'nein-vote';
+        }
+        const roleCard = players[i].querySelector('.role-card');
+        roleCard.before(vote);
+    }
+    const attention = createModalWindow();
+    const title = document.createElement('h3');
+    title.innerText = 'Внимание! Результаты голосования.';
+    attention.querySelector('.popup-body').append(title);
+    document.body.appendChild(attention);
+    setTimeout(() => document.body.removeChild(attention), 3000);
     // todo вывод результатов голосования, перекрасить ход выборов и изменить табличку канцлера
 });
 
@@ -235,7 +256,7 @@ socket.on('chancellorLawChoosing', data => {
 socket.on('skip', data => {
     const payload = JSON.parse(data).payload;
     const checkboxes = document.body.querySelectorAll('input[type=checkbox]');
-    for (let i = 1; i <= payload.skipped; i++){
+    for (let i = 1; i <= payload.skipped; i++) {
         checkboxes[i].checked = true;
     }
     return;
@@ -243,9 +264,10 @@ socket.on('skip', data => {
 
 socket.on('lawAdopted', data => {
     const payload = JSON.parse(data).payload;
-    for (let i = 1; i <= payload.fascistField; i++){
+    for (let i = 1; i <= payload.fascistField; i++) {
         const field = document.body.querySelector(`#f${i}`);
         removeAllChildren(field);
+        field.style.padding = '0';
         const img = document.createElement('img');
         img.src = 'images/lawCards/fascistLaw.png';
         img.alt = 'Фашистский закон';
@@ -253,7 +275,7 @@ socket.on('lawAdopted', data => {
         field.appendChild(img);
     }
 
-    for (let i = 1; i <= payload.liberalField; i++){
+    for (let i = 1; i <= payload.liberalField; i++) {
         const field = document.body.querySelector(`#l${i}`);
         removeAllChildren(field);
         const img = document.createElement('img');
@@ -264,7 +286,7 @@ socket.on('lawAdopted', data => {
     }
 
     const checkboxes = document.body.querySelectorAll('input[type=checkbox]');
-    for (let i = 1; i < checkboxes.length; i++){
+    for (let i = 1; i < checkboxes.length; i++) {
         checkboxes[i].checked = false;
     }
 });

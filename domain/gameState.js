@@ -247,7 +247,7 @@ class GameState {
                 }
                 this.currentChancellor = this.chancellorCandidate;
                 this.currentChancellor.role = Const.Role.Chancellor;
-                this.sendPlayersGameList('playersListUpdated');
+                setTimeout(() => this.sendPlayersGameList('playersListUpdated'), 10000);
                 setTimeout(() => this.presidentLawChoosing(), 1000);
             } else {
                 this.skipPawn++;
