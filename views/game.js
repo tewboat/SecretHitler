@@ -126,6 +126,21 @@ function showTopCardsModalWindow(cards, windowTitle) {
     setTimeout(() => document.body.removeChild(modalWindow), 3000);
 }
 
+function showWinnerModalWindow(windowTitle) {
+    const modalWindow = createModalWindow();
+    const modalWindowForm = createModalWindowForm(windowTitle);
+    modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
+    const button = modalWindowForm.querySelector('input[type=submit]');
+    button.value = 'Выйти';
+
+    modalWindowForm.addEventListener('submit', e => {
+        e.preventDefault();
+        window.location.href = 'http://localhost:3000/';
+    });
+
+    document.body.appendChild(modalWindow);
+}
+
 function showInformationModalWindow(text) {
     const modalWindow = createModalWindow();
     const p = document.createElement('p');
@@ -392,4 +407,10 @@ socket.on('showDeckAction', data => {
 
 socket.on('readinessСheck', () => {
     showReadyCheckModalWindow();
+});
+
+socket.on('win', data => {
+    const payload = JSON.parse(data).payload;
+    showWinnerModalWindow(
+        `Победила партия ${payload.winner === 'Liberal' ? 'либералов' : 'фашистов'}. \n${payload.reason}`)
 });
