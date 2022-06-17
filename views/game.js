@@ -234,7 +234,11 @@ socket.on('chancellorLawChoosing', data => {
 
 socket.on('skip', data => {
     const payload = JSON.parse(data).payload;
-    //TODO установить пропущенные ходы payload.skipped
+    const checkboxes = document.body.querySelectorAll('input[type=checkbox]');
+    for (let i = 1; i <= payload.skipped; i++){
+        checkboxes[i].checked = true;
+    }
+    return;
 });
 
 socket.on('lawAdopted', data => {
@@ -258,9 +262,12 @@ socket.on('lawAdopted', data => {
         img.classList.add('card');
         field.appendChild(img);
     }
-});
 
-socket.on();
+    const checkboxes = document.body.querySelectorAll('input[type=checkbox]');
+    for (let i = 1; i < checkboxes.length; i++){
+        checkboxes[i].checked = false;
+    }
+});
 
 socket.on('readinessСheck', () => {
     showReadyCheckModalWindow();
