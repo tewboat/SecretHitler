@@ -17,8 +17,10 @@ class GameState {
 
         this.currentPresident = players[0];
         this.currentPresident.role = Const.Role.President;
-        this.currentChancellor = null;
+        this.currentChancellor = undefined;
         this.skipPawn = 0;
+
+        this.chancellorCandidate = null;
     }
 
     generatePlayersRoles() {
@@ -88,7 +90,7 @@ class GameState {
         return playersInfo;
     }
 
-    sendPlayersGameList() {
+    sendPlayersGameList(tag) {
         const fascistList = this.getPlayersInfoList(player => {
             return {
                 role: player.role,
@@ -97,7 +99,7 @@ class GameState {
             }
         });
 
-        this.notifyPlayers('start', JSON.stringify({
+        this.notifyPlayers(tag, JSON.stringify({
             payload: {
                 president: this.currentPresident.nickname,
                 role: 'Фашист',
@@ -125,7 +127,7 @@ class GameState {
             });
         }
 
-        this.notifyPlayers('start', JSON.stringify({
+        this.notifyPlayers(tag, JSON.stringify({
             payload: {
                 president: this.currentPresident.nickname,
                 role: 'Гитлер',
@@ -150,19 +152,19 @@ class GameState {
                 }
             });
 
-            this.notifyPlayers('start', JSON.stringify({
+            player.socket.emit(tag, JSON.stringify({
                 payload: {
                     president: this.currentPresident.nickname,
                     role: 'Либерал',
                     players: list
                 }
-            }), p => p === player);
+            }));
         }
 
     }
 
     run() {
-        this.sendPlayersGameList();
+        this.sendPlayersGameList('start');
         setTimeout(() => this.electionEvent(), 6000);
     }
 
@@ -190,8 +192,8 @@ class GameState {
         this.votes = new Map();
         this.notifyPlayers('voting', JSON.stringify({
             payload: {
-                chancellorNickname: this.currentChancellor.nickname,
-                chancellorID: this.currentChancellor.socketID
+                chancellorNickname: this.chancellorCandidate.nickname,
+                chancellorID: this.chancellorCandidate.socketID
             }
         }));
     }
@@ -208,11 +210,10 @@ class GameState {
         return this.votes.size === this.players.length;
     }
 
-    setChancellor(id) {
+    setChancellorCandidate(id) {
         for (let player of this.players) {
             if (player.socketID === id) {
-                this.currentChancellor = player;
-                this.currentChancellor.role = Const.Role.Chancellor;
+                this.chancellorCandidate = player;
                 return;
             }
         }
@@ -239,8 +240,15 @@ class GameState {
 
         setTimeout(() => {
             if (ja > nein) {
-                this.presidentLawChoosing();
                 this.skipPawn = 0;
+                if (this.currentChancellor !== undefined) {
+                    this.currentChancellor.role = Const.Role.Player;
+                    this.lastChancellor = this.currentChancellor;
+                }
+                this.currentChancellor = this.chancellorCandidate;
+                this.currentChancellor.role = Const.Role.Chancellor;
+                this.sendPlayersGameList('playersListUpdated');
+                setTimeout(() => this.presidentLawChoosing(), 1000);
             } else {
                 this.skipPawn++;
                 if (this.skipPawn === 3) {
