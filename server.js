@@ -146,7 +146,7 @@ io.on('connection', ws => {
 
     ws.on('chancellorElected', data => {
         const payload = JSON.parse(data).payload;
-        room.gameState.setChancellor(payload.id);
+        room.gameState.setChancellorCandidate(payload.id);
         room.gameState.voting();
     })
 
@@ -169,7 +169,7 @@ io.on('connection', ws => {
         const payload = JSON.parse(data).payload;
         room.gameState.removeLaw(payload.value);
         room.gameState.adoptLaw(room.gameState.laws[0]);
-    })
+    });
 
 
     ws.on('disconnect', () => {
@@ -180,7 +180,7 @@ io.on('connection', ws => {
             return;
         }
         if (room.isGameStarted()) {
-            room.gameState.sendPlayersGameList();
+            room.gameState.sendPlayersGameList('playersListUpdated');
         } else {
             const players = room.getPlayersList();
             room.notifyPlayers('playersListUpdated', JSON.stringify({

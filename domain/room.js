@@ -40,17 +40,17 @@ class Room {
     }
 
     removePlayer(socketId) {
-        let newArray = this.findBy(this.players, (p) => p.socketID !== socketId);
-        if (newArray.length === this.players.length) {
-            //throw new Error("no such socketID to delete");
-        }
-        else {
-            this.readyCount--;
-            this.players = newArray;
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].socketID === socketId) {
+                this.readyCount--;
+                this.players.splice(i, 1);
+                return;
+            }
         }
     }
 
-    isGameStarted(){
+
+    isGameStarted() {
         return this.gameStarted;
     }
 
@@ -96,7 +96,8 @@ class Room {
     runGame() {
         if (this.players.length !== this.maxPlayersCount) {
             return;
-        }this.gameStarted = true;
+        }
+        this.gameStarted = true;
         this.gameState = new GameState(this.maxPlayersCount, this.players);
         this.gameState.run();
     }
