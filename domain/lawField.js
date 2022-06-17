@@ -2,60 +2,35 @@ const types = require('./constants');
 
 class FascistField {
     constructor(playerCount) {
-        //this.playerCount = playerCount;
         this.lawCount = 0;
         if (playerCount === 5 || playerCount === 6) {
             this.events = [
                 null,
                 null,
-                this.showDeck];
+                types.Action.ShowDeck];
         } else if (playerCount === 7 || playerCount === 8) {
             this.events = [
                 null,
-                this.showPlayerParty,
-                this.chooseNextPresident];
+                types.Action.ShowPlayerParty,
+                types.Action.SetNextPresident];
         } else if (playerCount === 9 || playerCount === 10) {
             this.events = [
-                this.showPlayerParty,
-                this.showPlayerParty,
-                this.chooseNextPresident];
+                types.Action.ShowPlayerParty,
+                types.Action.ShowPlayerParty,
+                types.Action.SetNextPresident];
         } else throw new Error('invalid players count');
 
-        this.events.push(this.killSomebody);
-        this.events.push(this.killSomebodyAndVeto);
-        this.events.push(this.fascistWin);
+        this.events.push(types.Action.KillPlayer);
+        this.events.push(types.Action.KillPlayer);
     }
 
 
-    getNextEvent(){
+    addLaw() {
         this.lawCount++;
-        // TODO fix this.events[this.iterator++]();
     }
 
-    showDeck() {
-
-    }
-
-
-    showPlayerParty() {
-
-    }
-
-    chooseNextPresident() {
-
-    }
-
-    killSomebody() {
-
-    }
-
-    killSomebodyAndVeto() {
-        this.killSomebody();
-
-    }
-
-    fascistWin() {
-
+    getAction(){
+        return this.events[this.lawCount - 1];
     }
 }
 
@@ -64,13 +39,8 @@ class LiberalField{
         this.lawCount = 0;
     }
 
-    getNextEvent(){
+    addLaw(){
         this.lawCount++;
-        if (this.lawCount === 5) this.LiberalWinEvent();
-    }
-
-    LiberalWinEvent(){
-
     }
 }
 
@@ -82,9 +52,9 @@ class LawsField {
 
     addLaw(law) {
         if (law.type === types.Party.Liberal) {
-            this.liberalField.getNextEvent();
+            this.liberalField.addLaw();
         } else {
-            this.fascistField.getNextEvent();
+            this.fascistField.addLaw();
         }
     }
 }

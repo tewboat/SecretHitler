@@ -15,13 +15,14 @@ class GameState {
         this.lastPresident = null;
         this.lastChancellor = null;
 
-        this.currentPresident = players[0];
+        this.currentPresident = players[Math.floor(Math.random() * this.players.length)];
         this.currentPresident.role = Const.Role.President;
-        this.currentChancellor = undefined;
+        this.currentChancellor = null;
         this.skipPawn = 0;
 
         this.chancellorCandidate = null;
         this.roomName = roomName;
+        this.nextPresident = null;
     }
 
     generatePlayersRoles() {
@@ -96,7 +97,8 @@ class GameState {
             return {
                 role: player.role,
                 src: player.src,
-                nickname: player.nickname
+                nickname: player.nickname,
+                alive: player.isAlive
             }
         });
 
@@ -117,13 +119,15 @@ class GameState {
                     return {
                         role: player.role,
                         src: player.src,
-                        nickname: player.nickname
+                        nickname: player.nickname,
+                        alive: player.isAlive
                     }
                 }
                 return {
                     role: player.role,
                     src: 'images/rolesCards/card_shirt.png',
-                    nickname: player.nickname
+                    nickname: player.nickname,
+                    alive: player.isAlive
                 }
             });
         }
@@ -143,13 +147,15 @@ class GameState {
                     return {
                         role: p.role,
                         src: p.src,
-                        nickname: p.nickname
+                        nickname: p.nickname,
+                        alive: p.isAlive
                     }
                 }
                 return {
                     role: p.role,
                     src: 'images/rolesCards/card_shirt.png',
-                    nickname: p.nickname
+                    nickname: p.nickname,
+                    alive: p.isAlive
                 }
             });
 
@@ -164,6 +170,19 @@ class GameState {
 
     }
 
+    getPlayerById(playerId) {
+        for (let player of this.players) {
+            if (player.socketID === playerId) {
+                return player;
+            }
+        }
+        return undefined;
+    }
+
+    sendMessageToPresident(tag, message) {
+        this.currentPresident.socket.emit(tag, message);
+    }
+
     run() {
         this.sendPlayersGameList('start');
         setTimeout(() => this.electionEvent(), 6000);
@@ -172,7 +191,7 @@ class GameState {
     electionEvent() {
         const playersList = [];
         for (let player of this.players) {
-            if ([this.lastPresident, this.lastChancellor, this.currentPresident].includes(player)) {
+            if ([this.lastPresident, this.lastChancellor, this.currentPresident].includes(player) || !player.isAlive) {
                 continue;
             }
 
@@ -196,7 +215,7 @@ class GameState {
                 chancellorNickname: this.chancellorCandidate.nickname,
                 chancellorID: this.chancellorCandidate.socketID
             }
-        }));
+        }), player => player.isAlive);
     }
 
     setVote(id, vote) {
@@ -208,7 +227,11 @@ class GameState {
     }
 
     allVoted() {
-        return this.votes.size === this.players.length;
+        let counter = 0;
+        this.players.forEach(player => {
+            counter += player.isAlive;
+        });
+        return this.votes.size === counter;
     }
 
     setChancellorCandidate(id) {
@@ -242,12 +265,18 @@ class GameState {
         setTimeout(() => {
             if (ja > nein) {
                 this.skipPawn = 0;
-                if (this.currentChancellor !== undefined) {
+                if (this.currentChancellor !== null) {
                     this.currentChancellor.role = Const.Role.Player;
-                    this.lastChancellor = this.currentChancellor;
                 }
+
                 this.currentChancellor = this.chancellorCandidate;
                 this.currentChancellor.role = Const.Role.Chancellor;
+
+                if (this.field.fascistField.lawCount >= 3 && this.currentChancellor.isHitler) {
+                    this.fascistWin('Гитлер пришел к власти.');
+                    return;
+                }
+
                 setTimeout(() => this.sendPlayersGameList('playersListUpdated'), 10000);
                 setTimeout(() => this.presidentLawChoosing(), 1000);
             } else {
@@ -256,7 +285,6 @@ class GameState {
                     this.skipPawn = 0;
                     const law = this.getLaws(1)[0];
                     this.adoptLaw(law, true);
-                    setTimeout(() => this.nextMove(), 1000);
                 } else {
                     this.notifyPlayers('skip', JSON.stringify({
                         payload: {
@@ -317,35 +345,155 @@ class GameState {
             }
         }));
 
-        return;
-
         if (law.type === types.Party.Liberal) {
+            if (this.field.liberalField.lawCount === 5) {
+                this.liberalWin('Были приняты 5 либеральных законов.');
+                return;
+            }
             this.nextMove();
             return;
         }
 
         if (!ignoreAction) {
-            setTimeout(() => {
-                this.currentPresident.socket.emit('action', JSON.stringify({
+            if (this.field.fascistField.lawCount === 6) {
+                this.fascistWin('Были приняты 6 фашистских законов.');
+                return;
+            }
+
+            setTimeout(() => this.onAction(this.field.fascistField.getAction(), 3000));
+        }
+        setTimeout(() => this.nextMove(), 6000);
+    }
+
+    showDeckAction() {
+        const cards = this.decks.peekTopCards(3);
+        this.currentPresident.socket.emit('showDeckAction', JSON.stringify({
+            payload: {
+                cards: cards
+            }
+        }));
+    }
+
+    showPlayerPartyAction() {
+        const players = [];
+        this.players.forEach(player => {
+            if (player !== this.currentPresident && !player.isChecked) {
+                players.push({
+                    id: player.socketID,
+                    nickname: player.nickname
+                });
+            }
+        });
+
+        this.currentPresident.socket.emit('showPlayerPartyAction', JSON.stringify({
                     payload: {
-                        action: 'kill' // TODO
+                        players: players
                     }
-                }));
-            }, 3000);
+                }
+            )
+        );
+    }
+
+    setNextPresident(playerId) {
+        for (let player of this.players) {
+            if (player.socketID === playerId) {
+                this.nextPresident = player;
+                return;
+            }
         }
     }
 
-    nextMove() {
-        // TODO сменить президента
-        const infoList = this.getPlayersInfoList(player => {
-            return {
-                president: player === this.currentPresident,
-                chancellor: player === this.currentChancellor,
-                nickname: player.nickname
+    sendAlivePlayersListToPresident(tag) {
+        const players = [];
+        this.players.forEach(player => {
+            if (player !== this.currentPresident && player.isAlive) {
+                players.push({
+                    id: player.socketID,
+                    nickname: player.nickname
+                });
             }
         });
+
+        this.currentPresident.socket.emit(tag, JSON.stringify({
+                    payload: {
+                        players: players
+                    }
+                }
+            )
+        );
     }
 
+    killPlayer(id) {
+        for (let player of this.players) {
+            if (player.socketID === id) {
+                player.isAlive = false;
+                return player;
+            }
+        }
+    }
+
+    liberalWin(reason) {
+        this.notifyPlayers('win', JSON.stringify({
+            payload: {
+                winner: Const.Party.Liberal,
+                reason: reason
+            }
+        }));
+    }
+
+    fascistWin(reason) {
+        this.notifyPlayers('win', JSON.stringify({
+            payload: {
+                winner: Const.Party.Fascist,
+                reason: reason
+            }
+        }));
+    }
+
+    onAction(action) {
+        switch (action) {
+            case Const.Action.KillPlayer:
+                this.sendAlivePlayersListToPresident('killPlayerAction');
+                break;
+            case Const.Action.ShowDeck:
+                this.showDeckAction();
+                break;
+            case Const.Action.SetNextPresident:
+                this.sendAlivePlayersListToPresident('setNextPresidentAction');
+                break;
+            case Const.Action.ShowPlayerParty:
+                this.showPlayerPartyAction();
+                break;
+        }
+    }
+
+
+    nextMove() {
+        this.lastPresident = this.currentPresident;
+        this.currentPresident.role = Const.Role.Player;
+        this.lastChancellor = this.currentChancellor;
+
+        if (this.currentChancellor !== null) {
+            this.currentChancellor.role = Const.Role.Player;
+            this.currentChancellor = null;
+        }
+
+        if (this.nextPresident !== null) {
+            this.currentPresident = this.nextPresident;
+        } else {
+            for (let i = 0; i < this.players.length; i++) {
+                if (this.currentPresident === this.players[i]) {
+                    const newIndex = (i + 1) % this.players.length;
+                    this.currentPresident = this.players[newIndex];
+                    break;
+                }
+            }
+        }
+
+        this.currentPresident.role = Const.Role.President;
+        this.sendPlayersGameList('playersListUpdated');
+        setTimeout(() => this.electionEvent(), 2000);
+    }
 }
 
 module.exports = GameState;
