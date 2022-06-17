@@ -129,7 +129,8 @@ io.on('connection', ws => {
         room.notifyPlayers('playersListUpdated', JSON.stringify({
             payload: {
                 players: players,
-                maxPlayersCount: room.maxPlayersCount
+                maxPlayersCount: room.maxPlayersCount,
+                roomName: room.name,
             }
         }), _ => true);
 

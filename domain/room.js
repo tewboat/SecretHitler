@@ -98,7 +98,7 @@ class Room {
             return;
         }
         this.gameStarted = true;
-        this.gameState = new GameState(this.maxPlayersCount, this.players);
+        this.gameState = new GameState(this.maxPlayersCount, this.players, this.name);
         this.gameState.run();
     }
 }
