@@ -171,6 +171,48 @@ io.on('connection', ws => {
         room.gameState.adoptLaw(room.gameState.laws[0]);
     });
 
+    ws.on('showPlayerPartyAction', data => {
+        const payload = JSON.parse(data).payload;
+        const player = room.gameState.getPlayerById(payload.id);
+        room.gameState.sendMessageToPresident('showPlayerParty', JSON.stringify({
+                payload: {
+                    nickname: player?.nickname,
+                    party: player?.party
+                }
+            }
+        ));
+
+        room.gameState.notifyPlayers('playerPartyKnown', JSON.stringify({
+            payload: {
+                nickname: player?.nickname
+            }
+        }), player => player !== room.gameState.currentPresident);
+    });
+
+    ws.on('setNextPresidentAction', data => {
+        const payload = JSON.parse(data).payload;
+        room.gameState.setNextPresident(payload.id);
+        room.gameState.notifyPlayers('setNextPresident', JSON.stringify({
+            payload: {
+                nickname: room.gameState.nextPresident.nickname
+            }
+        }))
+    });
+
+    ws.on('playerKilled', data => {
+        const payload = JSON.parse(data).payload;
+        const killedPlayer = room.gameState.killPlayer(payload.id);
+        if (killedPlayer.isHitler) {
+            room.gameState.liberalWin();
+            return;
+        }
+        room.gameState.notifyPlayers('playerKilled', JSON.stringify({
+            payload: {
+                nickname: killedPlayer.nickname
+            }
+        }));
+        setTimeout(() => room.gameState.sendPlayersGameList('playersListUpdated'), 3000);
+    });
 
     ws.on('disconnect', () => {
         console.log('disconnected')
