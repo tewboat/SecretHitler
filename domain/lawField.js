@@ -2,11 +2,10 @@ const types = require('./constants');
 
 class FascistField {
     constructor(playerCount) {
-        //this.playerCount = playerCount;
         this.lawCount = 0;
         if (playerCount === 5 || playerCount === 6) {
             this.events = [
-                types.Action.ShowDeck,
+                null,
                 null,
                 types.Action.ShowDeck];
         } else if (playerCount === 7 || playerCount === 8) {
@@ -28,7 +27,6 @@ class FascistField {
 
     addLaw() {
         this.lawCount++;
-        // TODO fix this.events[this.iterator++]();
     }
 
     getAction(){

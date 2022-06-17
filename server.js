@@ -203,7 +203,7 @@ io.on('connection', ws => {
         const payload = JSON.parse(data).payload;
         const killedPlayer = room.gameState.killPlayer(payload.id);
         if (killedPlayer.isHitler) {
-            room.gameState.liberalWin();
+            room.gameState.liberalWin('Гитлер был убит.');
             return;
         }
         room.gameState.notifyPlayers('playerKilled', JSON.stringify({
@@ -215,7 +215,6 @@ io.on('connection', ws => {
     });
 
     ws.on('disconnect', () => {
-        console.log('disconnected')
         room.removePlayer(ws.id);
         if (room.players.length === 0) {
             rooms.delete(room.id);

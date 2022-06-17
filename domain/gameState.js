@@ -15,9 +15,9 @@ class GameState {
         this.lastPresident = null;
         this.lastChancellor = null;
 
-        this.currentPresident = players[0];
+        this.currentPresident = players[Math.floor(Math.random() * this.players.length)];
         this.currentPresident.role = Const.Role.President;
-        this.currentChancellor = undefined;
+        this.currentChancellor = null;
         this.skipPawn = 0;
 
         this.chancellorCandidate = null;
@@ -178,7 +178,7 @@ class GameState {
         return undefined;
     }
 
-    sendMessageToPresident(tag, message){
+    sendMessageToPresident(tag, message) {
         this.currentPresident.socket.emit(tag, message);
     }
 
@@ -264,16 +264,18 @@ class GameState {
         setTimeout(() => {
             if (ja > nein) {
                 this.skipPawn = 0;
-                if (this.currentChancellor !== undefined) {
+                if (this.currentChancellor !== null) {
                     this.currentChancellor.role = Const.Role.Player;
-                    this.lastChancellor = this.currentChancellor;
-
-                    if (this.field.fascistField.lawCount >= 3 && this.currentChancellor.isHitler) {
-                        this.fascistWin();
-                    }
                 }
+
                 this.currentChancellor = this.chancellorCandidate;
                 this.currentChancellor.role = Const.Role.Chancellor;
+
+                if (this.field.fascistField.lawCount >= 3 && this.currentChancellor.isHitler) {
+                    this.fascistWin('Гитлер пришел к власти.');
+                    return;
+                }
+
                 setTimeout(() => this.sendPlayersGameList('playersListUpdated'), 10000);
                 setTimeout(() => this.presidentLawChoosing(), 1000);
             } else {
@@ -282,7 +284,6 @@ class GameState {
                     this.skipPawn = 0;
                     const law = this.getLaws(1)[0];
                     this.adoptLaw(law, true);
-                    setTimeout(() => this.nextMove(), 1000);
                 } else {
                     this.notifyPlayers('skip', JSON.stringify({
                         payload: {
@@ -345,7 +346,7 @@ class GameState {
 
         if (law.type === types.Party.Liberal) {
             if (this.field.liberalField.lawCount === 5) {
-                this.liberalWin();
+                this.liberalWin('Были приняты 5 либеральных законов.');
                 return;
             }
             this.nextMove();
@@ -354,12 +355,13 @@ class GameState {
 
         if (!ignoreAction) {
             if (this.field.fascistField.lawCount === 6) {
-                this.fascistWin();
+                this.fascistWin('Были приняты 6 фашистских законов.');
                 return;
             }
 
-            this.onAction(this.field.fascistField.getAction());
+            setTimeout(() => this.onAction(this.field.fascistField.getAction(), 3000));
         }
+        setTimeout(() => this.nextMove(), 6000);
     }
 
     showDeckAction() {
@@ -420,61 +422,77 @@ class GameState {
         );
     }
 
-    killPlayer(id){
-        for (let player of this.players){
-            if (player.socketID === id){
+    killPlayer(id) {
+        for (let player of this.players) {
+            if (player.socketID === id) {
                 player.isAlive = false;
                 return player;
             }
         }
     }
 
-    liberalWin() {
+    liberalWin(reason) {
         this.notifyPlayers('win', JSON.stringify({
             payload: {
-                winner: Const.Party.Liberal
+                winner: Const.Party.Liberal,
+                reason: reason
             }
         }));
     }
 
-    fascistWin() {
+    fascistWin(reason) {
         this.notifyPlayers('win', JSON.stringify({
             payload: {
-                winner: Const.Party.Fascist
+                winner: Const.Party.Fascist,
+                reason: reason
             }
         }));
     }
 
     onAction(action) {
-        setTimeout(() => {
-            switch (action) {
-                case Const.Action.KillPlayer:
-                    this.sendAlivePlayersListToPresident('killPlayerAction');
-                    break;
-                case Const.Action.ShowDeck:
-                    this.showDeckAction();
-                    break;
-                case Const.Action.SetNextPresident:
-                    this.sendAlivePlayersListToPresident('setNextPresidentAction');
-                    break;
-                case Const.Action.ShowPlayerParty:
-                    this.showPlayerPartyAction();
-                    break;
-            }
-        }, 3000);
+        switch (action) {
+            case Const.Action.KillPlayer:
+                this.sendAlivePlayersListToPresident('killPlayerAction');
+                break;
+            case Const.Action.ShowDeck:
+                this.showDeckAction();
+                break;
+            case Const.Action.SetNextPresident:
+                this.sendAlivePlayersListToPresident('setNextPresidentAction');
+                break;
+            case Const.Action.ShowPlayerParty:
+                this.showPlayerPartyAction();
+                break;
+        }
     }
+
 
     nextMove() {
-        // TODO сменить президента
-        const infoList = this.getPlayersInfoList(player => {
-            return {
-                president: player === this.currentPresident,
-                chancellor: player === this.currentChancellor,
-                nickname: player.nickname
-            }
-        });
-    }
+        this.lastPresident = this.currentPresident;
+        this.currentPresident.role = Const.Role.Player;
+        this.lastChancellor = this.currentChancellor;
 
+        if (this.currentChancellor !== null) {
+            this.currentChancellor.role = Const.Role.Player;
+            this.currentChancellor = null;
+        }
+
+        if (this.nextPresident !== null) {
+            this.currentPresident = this.nextPresident;
+        } else {
+            for (let i = 0; i < this.players.length; i++) {
+                if (this.currentPresident === this.players[i]) {
+                    const newIndex = (i + 1) % this.players.length;
+                    this.currentPresident = this.players[newIndex];
+                    break;
+                }
+            }
+        }
+
+        this.currentPresident.role = Const.Role.President;
+        this.sendPlayersGameList('playersListUpdated');
+        setTimeout(() => this.electionEvent(), 2000);
+    }
 }
 
 module.exports = GameState;
