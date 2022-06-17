@@ -1,0 +1,32 @@
+body {
+    background-color: #F3886D;
+    font-family: 'Roboto', sans-serif;
+}
+
+hr {
+    border: black solid;
+}
+
+#hitler-icon {
+    width: 10%;
+    position: absolute;
+}
+
+.back-button {
+    position: fixed;
+    margin-left: 70%;
+    color: black;
+    display: flex;
+    padding: 5px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 7px 7px 7px 0;
+    text-decoration: none;
+    text-align: center;
+    background-color: #de6f64;
+    width: max-content;
+}
+
+.hitler-icon {
+    text-align: center;
+}

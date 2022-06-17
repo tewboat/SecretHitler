@@ -5,7 +5,7 @@ const Const = require("./constants");
 const e = require("express");
 
 class GameState {
-    constructor(playersCount, players) {
+    constructor(playersCount, players, roomName) {
         this.playersCount = playersCount;
         this.players = players;
         this.field = new LawField(playersCount);
@@ -21,6 +21,7 @@ class GameState {
         this.skipPawn = 0;
 
         this.chancellorCandidate = null;
+        this.roomName = roomName;
         this.nextPresident = null;
     }
 

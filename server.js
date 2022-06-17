@@ -49,6 +49,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/views', 'menu.html'));
 });
 
+app.get('/rules', (req, res) => {
+    res.sendFile(path.join(__dirname, '/views', 'rules.html'));
+});
+
 app.post('/api/setName', (req, res) => {
     let nickname = escape(String(req.body.nickname));
     if (validateNickname(nickname)) {
@@ -129,7 +133,8 @@ io.on('connection', ws => {
         room.notifyPlayers('playersListUpdated', JSON.stringify({
             payload: {
                 players: players,
-                maxPlayersCount: room.maxPlayersCount
+                maxPlayersCount: room.maxPlayersCount,
+                roomName: room.name,
             }
         }), _ => true);
 
