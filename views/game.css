@@ -38,7 +38,7 @@
     height: 93px;
 }
 
-.role-card {
+.role-card, .vote {
     width: 30%;
 }
 
