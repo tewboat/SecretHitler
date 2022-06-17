@@ -235,6 +235,11 @@ li {
     color: white;
 }
 
+input[type='checkbox'] {
+    margin-bottom: 10%;
+    margin-left: 15%;
+}
+
 
 /*.input-player-count, .input-set-password, .input-room-name, .input-password, .create-room-button {*/
 /*    margin: 5px 20px;*/
