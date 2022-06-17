@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 const Player = require('./player');
 const GameState = require('./gameState');
-const Const = require('./constants');
 
 class Room {
 
@@ -24,11 +23,6 @@ class Room {
         return result;
     }
 
-    apply(array, action) {
-        for (let e of array)
-            action(e);
-    }
-
     addPlayer(username, socket) {
         if (this.isFull()) throw new Error("this room already full");
         if (this.findBy(this.players, (p) => p.nickname === username).length === 0) {
@@ -48,7 +42,6 @@ class Room {
             }
         }
     }
-
 
     isGameStarted() {
         return this.gameStarted;

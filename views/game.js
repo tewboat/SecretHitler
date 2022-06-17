@@ -4,8 +4,6 @@ const playersContainer = document.querySelector('.players-container');
 
 const defaultPlayerImage = 'images/rolesCards/card_shirt.png';
 
-let fieldGenerated = false;
-
 function removeAllChildren(element) {
     while (element.lastElementChild) {
         element.removeChild(element.lastElementChild);
@@ -98,6 +96,45 @@ function showCardsModalWindow(cards, windowTitle, socketEventTag) {
     document.body.appendChild(modalWindow);
 }
 
+function showTopCardsModalWindow(cards, windowTitle) {
+    const modalWindow = createModalWindow();
+    const modalWindowForm = createModalWindowForm(windowTitle);
+    const button = modalWindowForm.querySelector('input[type=submit]');
+    modalWindowForm.removeChild(button);
+    modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
+    const cardsContainer = document.createElement('div');
+    cardsContainer.classList.add('cards-container');
+    for (let card of cards) {
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.classList.add('choice-radio');
+        const img = document.createElement('img');
+        img.src = card.src;
+        img.classList.add('vote-card');
+        const label = document.createElement('label');
+        label.append(radio, img);
+        cardsContainer.appendChild(label);
+    }
+
+    modalWindowForm.appendChild(cardsContainer);
+
+    modalWindowForm.addEventListener('submit', e => {
+        e.preventDefault();
+    });
+
+    document.body.appendChild(modalWindow);
+    setTimeout(() => document.body.removeChild(modalWindow), 3000);
+}
+
+function showInformationModalWindow(text) {
+    const modalWindow = createModalWindow();
+    const p = document.createElement('p');
+    p.innerText = text;
+    modalWindow.querySelector('.popup-body').appendChild(p);
+    document.body.appendChild(modalWindow);
+    setTimeout(() => document.body.removeChild(modalWindow), 3000);
+}
+
 function showReadyCheckModalWindow() {
     const modalWindow = createModalWindow();
     const modalWindowBody = modalWindow.querySelector('.popup-body');
@@ -121,9 +158,9 @@ function showReadyCheckModalWindow() {
     document.body.appendChild(modalWindow);
 }
 
-function createElectionModalWindow(players) {
+function showChoosePlayerModalWindow(players, title, tag) {
     const modalWindow = createModalWindow();
-    const modalWindowForm = createModalWindowForm('Выберите кандидата в канцлеры');
+    const modalWindowForm = createModalWindowForm(title);
     modalWindow.querySelector('.popup-body').appendChild(modalWindowForm);
     const submit = modalWindowForm.querySelector('.modal-window-submit');
     const container = document.createElement('ul');
@@ -147,7 +184,7 @@ function createElectionModalWindow(players) {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
-        socket.emit('chancellorElected', JSON.stringify({
+        socket.emit(tag, JSON.stringify({
             payload: {
                 id: formData.get('chosenPlayerId')
             }
@@ -155,14 +192,14 @@ function createElectionModalWindow(players) {
         document.body.removeChild(modalWindow);
     });
 
-    return modalWindow;
+    document.body.appendChild(modalWindow);
 }
 
-function showVotes(votes){
+function showVotes(votes) {
     const players = document.querySelectorAll('.player');
     for (let i = 0; i < players.length; i++) {
         const previousVote = players[i].querySelector('.vote');
-        if (previousVote !== null){
+        if (previousVote !== null) {
             players[i].removeChild(previousVote);
         }
 
@@ -171,8 +208,7 @@ function showVotes(votes){
         if (votes[i] === 'ja') {
             vote.src = 'images/votingCards/ja.png';
             vote.alt = 'ja-vote';
-        }
-        else {
+        } else {
             vote.src = 'images/votingCards/nein.png';
             vote.alt = 'nein-vote';
         }
@@ -219,8 +255,7 @@ socket.on('start', data => {
 
 socket.on('chancellorElection', data => {
     const payload = JSON.parse(data).payload;
-    const modalWindow = createElectionModalWindow(payload.players);
-    document.body.appendChild(modalWindow);
+    showChoosePlayerModalWindow(payload.players, 'Выберите кандидата в канцлеры', 'chancellorElected');
 });
 
 socket.on('electionResults', data => {
@@ -267,7 +302,6 @@ socket.on('skip', data => {
     for (let i = 1; i <= payload.skipped; i++) {
         checkboxes[i].checked = true;
     }
-    return;
 });
 
 socket.on('lawAdopted', data => {
@@ -297,6 +331,63 @@ socket.on('lawAdopted', data => {
     for (let i = 1; i < checkboxes.length; i++) {
         checkboxes[i].checked = false;
     }
+});
+
+socket.on('showPlayerPartyAction', data => {
+    const players = JSON.parse(data).payload.players;
+    showChoosePlayerModalWindow(
+        players,
+        'Выберите игрока, партию которого вы хотите узнать',
+        'showPlayerPartyAction'
+    );
+})
+
+socket.on('showPlayerParty', data => {
+    const payload = JSON.parse(data).payload;
+    showInformationModalWindow(
+        `Игрок ${payload.nickname} принадлежит партии ${payload.party === 'Liberal' ? 'либералов' : 'фашистов'}`);
+});
+
+socket.on('playerPartyKnown', data => {
+    const payload = JSON.parse(data).payload;
+    showInformationModalWindow(
+        `Президент узнал партию игрока ${payload.nickname}`
+    );
+});
+
+socket.on('killPlayerAction', data => {
+   const payload = JSON.parse(data).payload;
+   showChoosePlayerModalWindow(
+       payload.players,
+       'Выберите игрока, которого хотите убить',
+       'playerKilled'
+       );
+});
+
+socket.on('playerKilled', data => {
+   const payload = JSON.parse(data).payload;
+    showInformationModalWindow(
+        `Игрок ${payload.nickname} был убит`
+    );
+});
+
+socket.on('setNextPresidentAction', data => {
+   const payload = JSON.parse(data).payload;
+   showChoosePlayerModalWindow(
+       payload.players,
+       'Выберите игрока, который будет следующим президентом',
+       'setNextPresidentAction'
+       );
+});
+
+socket.on('setNextPresident', data => {
+   const payload = JSON.parse(data).payload;
+   showInformationModalWindow(`Следующим президентом станет игрок ${payload.nickname}`);
+});
+
+socket.on('showDeckAction', data => {
+    const payload = JSON.parse(data).payload;
+    showTopCardsModalWindow(payload.cards, 'Верхние карты колоды');
 });
 
 socket.on('readinessСheck', () => {

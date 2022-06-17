@@ -10,6 +10,8 @@ class Player{
         this.isHitler = false;
         this.src = 'images/rolesCards/card_shirt.png';
         this.ready = false;
+        this.isChecked = false;
+        this.isAlive = true;
     }
 }
 
