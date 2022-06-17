@@ -158,6 +158,29 @@ function createElectionModalWindow(players) {
     return modalWindow;
 }
 
+function showVotes(votes){
+    const players = document.querySelectorAll('.player');
+    for (let i = 0; i < players.length; i++) {
+        const previousVote = players[i].querySelector('.vote');
+        if (previousVote !== null){
+            players[i].removeChild(previousVote);
+        }
+
+        const vote = document.createElement('img');
+        vote.classList.add('vote');
+        if (votes[i] === 'ja') {
+            vote.src = 'images/votingCards/ja.png';
+            vote.alt = 'ja-vote';
+        }
+        else {
+            vote.src = 'images/votingCards/nein.png';
+            vote.alt = 'nein-vote';
+        }
+        const roleCard = players[i].querySelector('.role-card');
+        roleCard.before(vote);
+    }
+}
+
 function updatePlayersList(players) {
     removeAllChildren(playersContainer);
     for (let player of players) {
@@ -202,28 +225,13 @@ socket.on('chancellorElection', data => {
 
 socket.on('electionResults', data => {
     const results = JSON.parse(data).payload.results;
-    const players = document.querySelectorAll('.player');
-    for (let i = 0; i < players.length; i++) {
-        const vote = document.createElement('img');
-        vote.classList.add('vote');
-        if (results[i] === 'ja') {
-            vote.src = 'images/votingCards/ja.png';
-            vote.alt = 'ja-vote';
-        }
-        else {
-            vote.src = 'images/votingCards/nein.png';
-            vote.alt = 'nein-vote';
-        }
-        const roleCard = players[i].querySelector('.role-card');
-        roleCard.before(vote);
-    }
+    this.showVotes(results);
     const attention = createModalWindow();
     const title = document.createElement('h3');
     title.innerText = 'Внимание! Результаты голосования.';
     attention.querySelector('.popup-body').append(title);
     document.body.appendChild(attention);
     setTimeout(() => document.body.removeChild(attention), 3000);
-    // todo вывод результатов голосования, перекрасить ход выборов и изменить табличку канцлера
 });
 
 socket.on('voting', data => {
