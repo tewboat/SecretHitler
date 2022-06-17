@@ -42,7 +42,7 @@ function createPlayerCard(player) {
     const img = document.createElement('img');
     img.src = player.src || defaultPlayerImage;
     img.alt = 'Role card shirt';
-    img.classList.add('card');
+    img.classList.add('role-card');
     div.appendChild(img);
     if (player.role === 'President' || player.role === 'Chancellor') {
         const role = document.createElement('img');
@@ -53,7 +53,7 @@ function createPlayerCard(player) {
             role.src = 'images/rolesCards/chancellor.png'
         }
         role.alt = `${player.role}`;
-        role.classList.add('card');
+        role.classList.add('role-card');
         div.appendChild(role);
     }
     const name = document.createElement('strong');
@@ -246,6 +246,7 @@ socket.on('lawAdopted', data => {
     for (let i = 1; i <= payload.fascistField; i++){
         const field = document.body.querySelector(`#f${i}`);
         removeAllChildren(field);
+        field.style.padding = '0';
         const img = document.createElement('img');
         img.src = 'images/lawCards/fascistLaw.png';
         img.alt = 'Фашистский закон';
