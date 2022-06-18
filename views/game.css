@@ -300,6 +300,12 @@ h4, p {
     font-family: 'Roboto', sans-serif;
 }
 
+.player-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .modal-window-submit {
     background-color: #94B88F;
     box-shadow: 5px 5px #555555;

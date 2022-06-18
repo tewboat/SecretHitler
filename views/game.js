@@ -35,19 +35,6 @@ function createModalWindowForm(title) {
 }
 
 
-function cancelKilledPlayer(killedNickname) {
-    let players = document.querySelectorAll('.player');
-    for (let player of players) {
-        let name = player.querySelector('strong');
-        if (name === killedNickname) {
-            let imagePlayer = player.querySelector('img');
-            imagePlayer.classList.add('killed-player');
-            name.style.color = 'red';
-        }
-    }
-}
-
-
 function createPlayerCard(player) {
     const div = document.createElement('div');
     div.classList.add('player');
