@@ -1,9 +1,10 @@
 const express = require('express');
-const http = require('http');
 const {Server} = require('socket.io');
 const Room = require('./domain/room.js');
 const cookieParser = require('cookie-parser');
 const path = require("path");
+const fs = require('fs');
+const https = require('https');
 
 
 const PORT = 3000;
@@ -22,7 +23,12 @@ app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "views")));
 app.use(redirectToLoginPage);
 
-const server = http.createServer(app);
+const server = https.createServer(
+    {
+        key: fs.readFileSync(path.join(__dirname, "certs", "server.key")),
+        cert: fs.readFileSync(path.join(__dirname, "certs", "server.cert"))
+    },
+    app);
 const io = new Server(server);
 const rooms = new Map(); // map<uid, room>
 
@@ -210,7 +216,6 @@ io.on('connection', ws => {
     });
 });
 
-
 server.listen(PORT, () => {
-    console.log(`http://localhost:${PORT}`)
+    console.log(`https://localhost:${PORT}`)
 })
