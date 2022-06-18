@@ -4,7 +4,7 @@ const Room = require('./domain/room.js');
 const cookieParser = require('cookie-parser');
 const path = require("path");
 const fs = require('fs');
-const https = require('https');
+const http = require('http');
 
 
 const PORT = process.env.PORT || 3000;
@@ -24,12 +24,7 @@ app.use(express.static(path.join(process.cwd(), "views")));
 app.use(redirectToLoginPage);
 app.enable('trust proxy')
 
-const server = https.createServer(
-    {
-        key: fs.readFileSync(path.join(__dirname, "certs", "server.key")),
-        cert: fs.readFileSync(path.join(__dirname, "certs", "server.cert"))
-    },
-    app);
+const server = http.createServer(app);
 const io = new Server(server);
 const rooms = new Map(); // map<uid, room>
 
