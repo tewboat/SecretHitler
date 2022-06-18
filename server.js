@@ -22,6 +22,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "views")));
 app.use(redirectToLoginPage);
+app.enable('trust proxy')
 
 const server = https.createServer(
     {
