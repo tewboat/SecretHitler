@@ -170,7 +170,7 @@ class GameState {
         const playersList = [];
         for (let player of this.players) {
             if ([this.lastChancellor, this.currentPresident].includes(player)
-                || (this.players.length >= 6 && this.currentPresident === player)
+                || (this.players.length >= 6 && this.lastPresident === player)
                 || !player.isAlive) {
                 continue;
             }
