@@ -2,7 +2,6 @@ const LawField = require('./lawField');
 const LawDeck = require('./lawDecks');
 const types = require('./constants');
 const Const = require("./constants");
-const e = require("express");
 
 class GameState {
     constructor(playersCount, players, roomName) {
@@ -183,9 +182,12 @@ class GameState {
         this.currentPresident.socket.emit(tag, message);
     }
 
+    defaultDelay = 5000;
+    electionResultDelay = 10000;
+
     run() {
         this.sendPlayersGameList('start');
-        setTimeout(() => this.electionEvent(), 6000);
+        setTimeout(() => this.electionEvent(), this.defaultDelay);
     }
 
     electionEvent() {
@@ -277,8 +279,8 @@ class GameState {
                     return;
                 }
 
-                setTimeout(() => this.sendPlayersGameList('playersListUpdated'), 10000);
-                setTimeout(() => this.presidentLawChoosing(), 1000);
+                setTimeout(() => this.sendPlayersGameList('playersListUpdated'), this.defaultDelay);
+                setTimeout(() => this.presidentLawChoosing(), this.defaultDelay * 2);
             } else {
                 this.skipPawn++;
                 if (this.skipPawn === 3) {
@@ -291,10 +293,10 @@ class GameState {
                             skipped: this.skipPawn
                         }
                     }), () => true);
-                    setTimeout(() => this.electionEvent(), 1000);
+                    setTimeout(() => this.electionEvent(), this.defaultDelay);
                 }
             }
-        }, 3000);
+        }, this.electionResultDelay);
     }
 
     removeLaw(type) {
@@ -350,7 +352,7 @@ class GameState {
                 this.liberalWin('Были приняты 5 либеральных законов.');
                 return;
             }
-            this.nextMove();
+            setTimeout(() => this.nextMove(), this.defaultDelay);
             return;
         }
 
@@ -360,10 +362,12 @@ class GameState {
                 return;
             }
 
-            setTimeout(() => this.onAction(this.field.fascistField.getAction(), 3000));
+            setTimeout(() => this.onAction(this.field.fascistField.getAction(), this.defaultDelay));
+        } else {
+            setTimeout(() => this.nextMove(), this.defaultDelay);
         }
-        setTimeout(() => this.nextMove(), 6000);
     }
+
 
     showDeckAction() {
         const cards = this.decks.peekTopCards(3);
@@ -372,6 +376,7 @@ class GameState {
                 cards: cards
             }
         }));
+        setTimeout(() => this.nextMove(), this.defaultDelay);
     }
 
     showPlayerPartyAction() {
@@ -394,10 +399,35 @@ class GameState {
         );
     }
 
+    showPlayerParty(id){
+        const player = this.getPlayerById(id);
+        this.sendMessageToPresident('showPlayerParty', JSON.stringify({
+                payload: {
+                    nickname: player?.nickname,
+                    party: player?.party
+                }
+            }
+        ));
+
+        this.notifyPlayers('playerPartyKnown', JSON.stringify({
+            payload: {
+                nickname: player?.nickname
+            }
+        }), player => player !== this.currentPresident);
+
+        setTimeout(() => this.nextMove(), this.defaultDelay);
+    }
+
     setNextPresident(playerId) {
         for (let player of this.players) {
             if (player.socketID === playerId) {
                 this.nextPresident = player;
+                this.notifyPlayers('setNextPresident', JSON.stringify({
+                    payload: {
+                        nickname: this.nextPresident.nickname
+                    }
+                }));
+                setTimeout(() => this.nextMove(), this.defaultDelay);
                 return;
             }
         }
@@ -427,7 +457,18 @@ class GameState {
         for (let player of this.players) {
             if (player.socketID === id) {
                 player.isAlive = false;
-                return player;
+                if (player.isHitler) {
+                    this.liberalWin('Гитлер был убит.');
+                    return;
+                }
+                this.notifyPlayers('playerKilled', JSON.stringify({
+                    payload: {
+                        nickname: player.nickname
+                    }
+                }));
+                setTimeout(() => this.sendPlayersGameList('playersListUpdated'), this.defaultDelay);
+                setTimeout(() => this.nextMove(), this.defaultDelay * 2);
+                return;
             }
         }
     }
@@ -464,6 +505,9 @@ class GameState {
             case Const.Action.ShowPlayerParty:
                 this.showPlayerPartyAction();
                 break;
+            default:
+                setTimeout(() => this.nextMove(), this.defaultDelay );
+                break;
         }
     }
 
@@ -492,7 +536,7 @@ class GameState {
 
         this.currentPresident.role = Const.Role.President;
         this.sendPlayersGameList('playersListUpdated');
-        setTimeout(() => this.electionEvent(), 2000);
+        setTimeout(() => this.electionEvent(), this.defaultDelay);
     }
 }
 
