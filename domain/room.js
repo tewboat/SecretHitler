@@ -36,7 +36,6 @@ class Room {
     removePlayer(socketId) {
         for (let i = 0; i < this.players.length; i++) {
             if (this.players[i].socketID === socketId) {
-                this.readyCount--;
                 this.players.splice(i, 1);
                 return;
             }
@@ -49,6 +48,12 @@ class Room {
 
     isAllReady() {
         return this.readyCount === this.maxPlayersCount;
+    }
+
+    readinessCheck(){
+        this.readyCount = 0;
+        this.players.forEach(player => player.ready = false);
+        this.notifyPlayers('readinessCheck', null, () => true);
     }
 
     setReady(socketID) {

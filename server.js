@@ -111,8 +111,6 @@ app.post('/api/createRoom', (req, res) => {
     res.json({id: room.id});
 });
 
-const gameDelay = 1000;
-
 io.on('connection', ws => {
     const roomId = ws.handshake.query.id;
     const room = rooms.get(roomId);
@@ -134,13 +132,13 @@ io.on('connection', ws => {
         }), _ => true);
 
         if (room.players.length === room.maxPlayersCount) {
-            room.notifyPlayers('readinessСheck', null, () => true);
+            room.notifyPlayers('readinessCheck', null, () => true);
         }
     });
 
     ws.on('ready', () => {
         if (room.setReady(ws.id)) {
-            setTimeout(() => room.runGame(), gameDelay);
+            setTimeout(() => room.runGame(), 1000);
         }
     });
 
@@ -173,45 +171,19 @@ io.on('connection', ws => {
 
     ws.on('showPlayerPartyAction', data => {
         const payload = JSON.parse(data).payload;
-        const player = room.gameState.getPlayerById(payload.id);
-        room.gameState.sendMessageToPresident('showPlayerParty', JSON.stringify({
-                payload: {
-                    nickname: player?.nickname,
-                    party: player?.party
-                }
-            }
-        ));
-
-        room.gameState.notifyPlayers('playerPartyKnown', JSON.stringify({
-            payload: {
-                nickname: player?.nickname
-            }
-        }), player => player !== room.gameState.currentPresident);
+        room.gameState.showPlayerParty(payload.id);
     });
 
     ws.on('setNextPresidentAction', data => {
         const payload = JSON.parse(data).payload;
         room.gameState.setNextPresident(payload.id);
-        room.gameState.notifyPlayers('setNextPresident', JSON.stringify({
-            payload: {
-                nickname: room.gameState.nextPresident.nickname
-            }
-        }))
+
     });
 
     ws.on('playerKilled', data => {
         const payload = JSON.parse(data).payload;
-        const killedPlayer = room.gameState.killPlayer(payload.id);
-        if (killedPlayer.isHitler) {
-            room.gameState.liberalWin('Гитлер был убит.');
-            return;
-        }
-        room.gameState.notifyPlayers('playerKilled', JSON.stringify({
-            payload: {
-                nickname: killedPlayer.nickname
-            }
-        }));
-        setTimeout(() => room.gameState.sendPlayersGameList('playersListUpdated'), 3000);
+        room.gameState.killPlayer(payload.id);
+
     });
 
     ws.on('disconnect', () => {

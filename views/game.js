@@ -123,7 +123,7 @@ function showTopCardsModalWindow(cards, windowTitle) {
     });
 
     document.body.appendChild(modalWindow);
-    setTimeout(() => document.body.removeChild(modalWindow), 3000);
+    setTimeout(() => document.body.removeChild(modalWindow), 5000);
 }
 
 function showWinnerModalWindow(windowTitle) {
@@ -147,7 +147,7 @@ function showInformationModalWindow(text) {
     p.innerText = text;
     modalWindow.querySelector('.popup-body').appendChild(p);
     document.body.appendChild(modalWindow);
-    setTimeout(() => document.body.removeChild(modalWindow), 3000);
+    setTimeout(() => document.body.removeChild(modalWindow), 5000);
 }
 
 function showReadyCheckModalWindow() {
@@ -281,7 +281,7 @@ socket.on('electionResults', data => {
     title.innerText = 'Внимание! Результаты голосования.';
     attention.querySelector('.popup-body').append(title);
     document.body.appendChild(attention);
-    setTimeout(() => document.body.removeChild(attention), 3000);
+    setTimeout(() => document.body.removeChild(attention), 2000);
 });
 
 socket.on('voting', data => {
@@ -405,7 +405,7 @@ socket.on('showDeckAction', data => {
     showTopCardsModalWindow(payload.cards, 'Верхние карты колоды');
 });
 
-socket.on('readinessСheck', () => {
+socket.on('readinessCheck', () => {
     showReadyCheckModalWindow();
 });
 
