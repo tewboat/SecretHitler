@@ -32,13 +32,7 @@ class GameState {
         unusedSz--;
 
         let fascistCount = -1;
-        if (this.playersCount === 5 || this.playersCount === 6)
-            fascistCount = 1;
-        else if (this.playersCount === 7 || this.playersCount === 8)
-            fascistCount = 2;
-        else if (this.playersCount === 9 || this.playersCount === 10)
-            fascistCount = 3;
-        else throw new Error('invalid count of players');
+        if (this.playersCount === 5 || this.playersCount === 6) fascistCount = 1; else if (this.playersCount === 7 || this.playersCount === 8) fascistCount = 2; else if (this.playersCount === 9 || this.playersCount === 10) fascistCount = 3; else throw new Error('invalid count of players');
 
         for (let f = 0; f < fascistCount; f++) {
             let randFs = Math.floor(Math.random() * unusedSz);
@@ -94,18 +88,13 @@ class GameState {
     sendPlayersGameList(tag) {
         const fascistList = this.getPlayersInfoList(player => {
             return {
-                role: player.role,
-                src: player.src,
-                nickname: player.nickname,
-                alive: player.isAlive
+                role: player.role, src: player.src, nickname: player.nickname, alive: player.isAlive
             }
         });
 
         this.notifyPlayers(tag, JSON.stringify({
             payload: {
-                president: this.currentPresident.nickname,
-                role: 'Фашист',
-                players: fascistList
+                president: this.currentPresident.nickname, role: 'Фашист', players: fascistList
             }
         }), player => player.party === Const.Party.Fascist);
 
@@ -116,10 +105,7 @@ class GameState {
             hilterList = this.getPlayersInfoList(player => {
                 if (player.isHitler) {
                     return {
-                        role: player.role,
-                        src: player.src,
-                        nickname: player.nickname,
-                        alive: player.isAlive
+                        role: player.role, src: player.src, nickname: player.nickname, alive: player.isAlive
                     }
                 }
                 return {
@@ -133,9 +119,7 @@ class GameState {
 
         this.notifyPlayers(tag, JSON.stringify({
             payload: {
-                president: this.currentPresident.nickname,
-                role: 'Гитлер',
-                players: hilterList
+                president: this.currentPresident.nickname, role: 'Гитлер', players: hilterList
             }
         }), player => player.isHitler);
 
@@ -144,25 +128,17 @@ class GameState {
             const list = this.getPlayersInfoList(p => {
                 if (player === p) {
                     return {
-                        role: p.role,
-                        src: p.src,
-                        nickname: p.nickname,
-                        alive: p.isAlive
+                        role: p.role, src: p.src, nickname: p.nickname, alive: p.isAlive
                     }
                 }
                 return {
-                    role: p.role,
-                    src: 'images/rolesCards/card_shirt.png',
-                    nickname: p.nickname,
-                    alive: p.isAlive
+                    role: p.role, src: 'images/rolesCards/card_shirt.png', nickname: p.nickname, alive: p.isAlive
                 }
             });
 
             player.socket.emit(tag, JSON.stringify({
                 payload: {
-                    president: this.currentPresident.nickname,
-                    role: 'Либерал',
-                    players: list
+                    president: this.currentPresident.nickname, role: 'Либерал', players: list
                 }
             }));
         }
@@ -193,13 +169,14 @@ class GameState {
     electionEvent() {
         const playersList = [];
         for (let player of this.players) {
-            if ([this.lastPresident, this.lastChancellor, this.currentPresident].includes(player) || !player.isAlive) {
+            if ([this.lastChancellor, this.currentPresident].includes(player)
+                || (this.players.length >= 6 && this.currentPresident === player)
+                || !player.isAlive) {
                 continue;
             }
 
             playersList.push({
-                id: player.socketID,
-                nickname: player.nickname
+                id: player.socketID, nickname: player.nickname
             });
         }
 
@@ -214,8 +191,7 @@ class GameState {
         this.votes = new Map();
         this.notifyPlayers('voting', JSON.stringify({
             payload: {
-                chancellorNickname: this.chancellorCandidate.nickname,
-                chancellorID: this.chancellorCandidate.socketID
+                chancellorNickname: this.chancellorCandidate.nickname, chancellorID: this.chancellorCandidate.socketID
             }
         }), player => player.isAlive);
     }
@@ -319,31 +295,26 @@ class GameState {
 
     presidentLawChoosing() {
         this.laws = this.getLaws(3);
-        this.currentPresident.socket.emit('presidentLawChoosing', JSON.stringify(
-            {
-                payload: {
-                    laws: this.laws
-                }
+        this.currentPresident.socket.emit('presidentLawChoosing', JSON.stringify({
+            payload: {
+                laws: this.laws
             }
-        ));
+        }));
     }
 
     chancellorLawChoosing() {
-        this.currentChancellor.socket.emit('chancellorLawChoosing', JSON.stringify(
-            {
-                payload: {
-                    laws: this.laws
-                }
+        this.currentChancellor.socket.emit('chancellorLawChoosing', JSON.stringify({
+            payload: {
+                laws: this.laws
             }
-        ))
+        }))
     }
 
     adoptLaw(law, ignoreAction = false) {
         this.field.addLaw(law);
         this.notifyPlayers('lawAdopted', JSON.stringify({
             payload: {
-                fascistField: this.field.fascistField.lawCount,
-                liberalField: this.field.liberalField.lawCount
+                fascistField: this.field.fascistField.lawCount, liberalField: this.field.liberalField.lawCount
             }
         }));
 
@@ -384,30 +355,25 @@ class GameState {
         this.players.forEach(player => {
             if (player !== this.currentPresident && !player.isChecked) {
                 players.push({
-                    id: player.socketID,
-                    nickname: player.nickname
+                    id: player.socketID, nickname: player.nickname
                 });
             }
         });
 
         this.currentPresident.socket.emit('showPlayerPartyAction', JSON.stringify({
-                    payload: {
-                        players: players
-                    }
-                }
-            )
-        );
+            payload: {
+                players: players
+            }
+        }));
     }
 
-    showPlayerParty(id){
+    showPlayerParty(id) {
         const player = this.getPlayerById(id);
         this.sendMessageToPresident('showPlayerParty', JSON.stringify({
-                payload: {
-                    nickname: player?.nickname,
-                    party: player?.party
-                }
+            payload: {
+                nickname: player?.nickname, party: player?.party
             }
-        ));
+        }));
 
         this.notifyPlayers('playerPartyKnown', JSON.stringify({
             payload: {
@@ -438,19 +404,16 @@ class GameState {
         this.players.forEach(player => {
             if (player !== this.currentPresident && player.isAlive) {
                 players.push({
-                    id: player.socketID,
-                    nickname: player.nickname
+                    id: player.socketID, nickname: player.nickname
                 });
             }
         });
 
         this.currentPresident.socket.emit(tag, JSON.stringify({
-                    payload: {
-                        players: players
-                    }
-                }
-            )
-        );
+            payload: {
+                players: players
+            }
+        }));
     }
 
     killPlayer(id) {
@@ -476,8 +439,7 @@ class GameState {
     liberalWin(reason) {
         this.notifyPlayers('win', JSON.stringify({
             payload: {
-                winner: Const.Party.Liberal,
-                reason: reason
+                winner: Const.Party.Liberal, reason: reason
             }
         }));
     }
@@ -485,8 +447,7 @@ class GameState {
     fascistWin(reason) {
         this.notifyPlayers('win', JSON.stringify({
             payload: {
-                winner: Const.Party.Fascist,
-                reason: reason
+                winner: Const.Party.Fascist, reason: reason
             }
         }));
     }
@@ -506,7 +467,7 @@ class GameState {
                 this.showPlayerPartyAction();
                 break;
             default:
-                setTimeout(() => this.nextMove(), this.defaultDelay );
+                setTimeout(() => this.nextMove(), this.defaultDelay);
                 break;
         }
     }
@@ -527,8 +488,14 @@ class GameState {
         } else {
             for (let i = 0; i < this.players.length; i++) {
                 if (this.currentPresident === this.players[i]) {
-                    const newIndex = (i + 1) % this.players.length;
-                    this.currentPresident = this.players[newIndex];
+                    for (let j = 1; j < this.players.length; j++) {
+                        const newIndex = (i + j) % this.players.length;
+                        if (!this.players[newIndex].isAlive) {
+                            continue;
+                        }
+                        this.currentPresident = this.players[newIndex];
+                        break;
+                    }
                     break;
                 }
             }
