@@ -238,6 +238,10 @@ function showVotes(votes) {
             players[i].removeChild(previousVote);
         }
 
+        if (votes[i] === null){
+            continue;
+        }
+
         const vote = document.createElement('img');
         vote.classList.add('vote');
         if (votes[i] === 'ja') {
