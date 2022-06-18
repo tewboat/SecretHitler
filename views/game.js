@@ -34,6 +34,20 @@ function createModalWindowForm(title) {
     return popupContent;
 }
 
+
+function cancelKilledPlayer(killedNickname) {
+    let players = document.querySelectorAll('.player');
+    for (let player of players) {
+        let name = player.querySelector('strong');
+        if (name === killedNickname) {
+            let imagePlayer = player.querySelector('img');
+            imagePlayer.classList.add('killed-player');
+            name.style.color = 'red';
+        }
+    }
+}
+
+
 function createPlayerCard(player) {
     const div = document.createElement('div');
     div.classList.add('player');
@@ -41,6 +55,9 @@ function createPlayerCard(player) {
     img.src = player.src || defaultPlayerImage;
     img.alt = 'Role card shirt';
     img.classList.add('role-card');
+    if (!player.alive && player.alive !== undefined) {
+        img.classList.add('killed-player');
+    }
     div.appendChild(img);
     if (player.role === 'President' || player.role === 'Chancellor') {
         const role = document.createElement('img');
@@ -55,6 +72,9 @@ function createPlayerCard(player) {
     }
     const name = document.createElement('strong');
     name.innerText = player.nickname;
+    if (!player.alive && player.alive !== undefined) {
+        name.style.color = 'red';
+    }
     div.appendChild(name);
     return div;
 }
@@ -241,6 +261,7 @@ function updatePlayersList(players) {
 }
 
 let playerInfoCreated = false;
+
 function updatePlayerInfo(roomName) {
     if (!playerInfoCreated) {
         const playerInfo = document.querySelector('.player-info');
@@ -255,6 +276,7 @@ function updatePlayerInfo(roomName) {
         playerInfoCreated = true;
     }
 }
+
 
 socket.emit('joinRoom', JSON.stringify({
     payload: {
@@ -388,33 +410,33 @@ socket.on('playerPartyKnown', data => {
 });
 
 socket.on('killPlayerAction', data => {
-   const payload = JSON.parse(data).payload;
-   showChoosePlayerModalWindow(
-       payload.players,
-       'Выберите игрока, которого хотите убить',
-       'playerKilled'
-       );
+    const payload = JSON.parse(data).payload;
+    showChoosePlayerModalWindow(
+        payload.players,
+        'Выберите игрока, которого хотите убить',
+        'playerKilled'
+    );
 });
 
 socket.on('playerKilled', data => {
-   const payload = JSON.parse(data).payload;
+    const payload = JSON.parse(data).payload;
     showInformationModalWindow(
         `Игрок ${payload.nickname} был убит`
     );
 });
 
 socket.on('setNextPresidentAction', data => {
-   const payload = JSON.parse(data).payload;
-   showChoosePlayerModalWindow(
-       payload.players,
-       'Выберите игрока, который будет следующим президентом',
-       'setNextPresidentAction'
-       );
+    const payload = JSON.parse(data).payload;
+    showChoosePlayerModalWindow(
+        payload.players,
+        'Выберите игрока, который будет следующим президентом',
+        'setNextPresidentAction'
+    );
 });
 
 socket.on('setNextPresident', data => {
-   const payload = JSON.parse(data).payload;
-   showInformationModalWindow(`Следующим президентом станет игрок ${payload.nickname}`);
+    const payload = JSON.parse(data).payload;
+    showInformationModalWindow(`Следующим президентом станет игрок ${payload.nickname}`);
 });
 
 socket.on('showDeckAction', data => {

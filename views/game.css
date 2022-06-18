@@ -235,6 +235,9 @@ aside {
     padding-bottom: 5px;
 }
 
+.killed-player {
+    filter: blur(5px);
+}
 
 /* pop-ups */
 /*.popup {*/
