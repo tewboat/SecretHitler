@@ -1,12 +1,12 @@
 const express = require('express');
-const http = require('http');
 const {Server} = require('socket.io');
 const Room = require('./domain/room.js');
 const cookieParser = require('cookie-parser');
 const path = require("path");
+const http = require('http');
 
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 
@@ -21,6 +21,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "views")));
 app.use(redirectToLoginPage);
+app.enable('trust proxy')
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -210,7 +211,6 @@ io.on('connection', ws => {
     });
 });
 
-
 server.listen(PORT, () => {
-    console.log(`http://localhost:${PORT}`)
+    console.log(`https://localhost:${PORT}`)
 })

@@ -99,7 +99,7 @@ function createListItem(name, password, playersCount, maxPlayersCount) {
 
 async function getListOfRooms() {
     const ul = document.createElement('ul');
-    const response = await fetch('http://localhost:3000/api/getAllRooms');
+    const response = await fetch('/api/getAllRooms');
     const rooms = await response.json();
 
     let lastClicked = null;
@@ -139,7 +139,7 @@ async function getListOfRooms() {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
 
-                const response = await fetch('http://localhost:3000/enter', {
+                const response = await fetch('/enter', {
                     method: 'POST', headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     }, body: JSON.stringify({
@@ -196,7 +196,7 @@ const states = {
 document.querySelector('.login-form').addEventListener('submit', async e => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const response = await fetch('http://localhost:3000/api/setName', {
+    const response = await fetch('/api/setName', {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
@@ -205,12 +205,8 @@ document.querySelector('.login-form').addEventListener('submit', async e => {
     });
     if (response.status === 200) {
         changeState(states.loginPage, states.menuPage);
-    } else {
-        // TODO вывод сообщения под полем
     }
 })
-
-// TODO добавить кнопку "Назад"
 
 const findBtn = states.menuPage.querySelector('.find-button');
 const createBtn = states.menuPage.querySelector('.create-button');
@@ -228,7 +224,7 @@ states.roomCreationPage.querySelector('.room-creation-form').addEventListener('s
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    let response = await fetch('http://localhost:3000/api/createRoom', {
+    let response = await fetch('/api/createRoom', {
         method: 'POST', headers: {
             'Content-Type': 'application/json;charset=utf-8'
         }, body: JSON.stringify({
@@ -240,7 +236,7 @@ states.roomCreationPage.querySelector('.room-creation-form').addEventListener('s
 
     if (response.status === 200) {
         const message = await response.json();
-        const html = await (await fetch('http://localhost:3000/enter', {
+        const html = await (await fetch('/enter', {
             method: 'POST', headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
@@ -257,9 +253,6 @@ states.roomCreationPage.querySelector('.room-creation-form').addEventListener('s
         }
 
         document.write(html);
-    } else {
-        console.log('все плохо');
-        // TODO вывести сообщение, что все плохо
     }
 })
 

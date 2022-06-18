@@ -135,7 +135,7 @@ function showWinnerModalWindow(windowTitle) {
 
     modalWindowForm.addEventListener('submit', e => {
         e.preventDefault();
-        window.location.href = 'http://localhost:3000/';
+        window.location.reload();
     });
 
     document.body.appendChild(modalWindow);
