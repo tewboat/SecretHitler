@@ -240,6 +240,22 @@ function updatePlayersList(players) {
     }
 }
 
+let playerInfoCreated = false;
+function updatePlayerInfo(roomName) {
+    if (!playerInfoCreated) {
+        const playerInfo = document.querySelector('.player-info');
+        const roomInfo = document.createElement('h4');
+        const nameInfo = document.createElement('h4');
+        roomInfo.classList.add('room-name');
+        roomInfo.innerText = `Комната: ${roomName}`;
+        nameInfo.classList.add('player-name');
+        nameInfo.innerText = `Игрок: ${getCookie('nickname')}`
+        playerInfo.appendChild(roomInfo);
+        playerInfo.appendChild(nameInfo);
+        playerInfoCreated = true;
+    }
+}
+
 socket.emit('joinRoom', JSON.stringify({
     payload: {
         nickname: getCookie('nickname')
@@ -249,6 +265,7 @@ socket.emit('joinRoom', JSON.stringify({
 socket.on('playersListUpdated', data => {
     const payload = JSON.parse(data).payload;
     updatePlayersList(payload.players);
+    updatePlayerInfo(payload.roomName);
 });
 
 socket.on('start', data => {

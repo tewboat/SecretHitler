@@ -25,12 +25,14 @@ class Room {
 
     addPlayer(username, socket) {
         if (this.isFull()) throw new Error("this room already full");
-        if (this.findBy(this.players, (p) => p.nickname === username).length === 0) {
-            this.players.push(new Player(username, socket));
-            return this.players.length - 1;
-        } else {
-            //throw new Error("that nickname already exists");
+        let counter = 0;
+        let newUsername = username;
+        while(this.findBy(this.players, (p) => p.nickname === newUsername).length !== 0){
+            newUsername = username + counter;
+            counter++;
         }
+        this.players.push(new Player(newUsername, socket));
+        return this.players.length - 1;
     }
 
     removePlayer(socketId) {
@@ -96,7 +98,7 @@ class Room {
             return;
         }
         this.gameStarted = true;
-        this.gameState = new GameState(this.maxPlayersCount, this.players);
+        this.gameState = new GameState(this.maxPlayersCount, this.players, this.name);
         this.gameState.run();
     }
 }
