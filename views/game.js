@@ -225,7 +225,7 @@ function showVotes(votes) {
             players[i].removeChild(previousVote);
         }
 
-        if (votes[i] === null){
+        if (votes[i] === null) {
             continue;
         }
 
@@ -234,9 +234,12 @@ function showVotes(votes) {
         if (votes[i] === 'ja') {
             vote.src = 'images/votingCards/ja.png';
             vote.alt = 'ja-vote';
-        } else {
+        } else if (votes[i] === 'nein') {
             vote.src = 'images/votingCards/nein.png';
             vote.alt = 'nein-vote';
+        } else {
+            vote.src = 'images/votingCards/baccot.png';
+            vote.alt = 'baccot-vote';
         }
         const roleCard = players[i].querySelector('.role-card');
         roleCard.before(vote);
