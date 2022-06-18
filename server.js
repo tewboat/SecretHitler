@@ -127,7 +127,7 @@ io.on('connection', ws => {
 
     ws.on('joinRoom', msg => {
         const payload = JSON.parse(msg).payload;
-        room.addPlayer(payload.nickname, ws);
+        room.addPlayer(escape(payload.nickname), ws);
         const players = room.getPlayersList();
         room.notifyPlayers('playersListUpdated', JSON.stringify({
             payload: {
