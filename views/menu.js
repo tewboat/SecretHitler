@@ -168,10 +168,8 @@ async function getListOfRooms() {
                     }
 
                     document.write(html);
-                } else {
-                    // TODO обработать случай неправильного пароля
                 }
-            })
+            });
             listItem.appendChild(form);
         });
         ul.appendChild(listItem);
