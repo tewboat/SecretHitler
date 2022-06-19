@@ -28,7 +28,7 @@ function createModalWindowForm(title) {
     popupContent.appendChild(popupTitle);
     const submit = document.createElement('input');
     submit.type = 'submit';
-    submit.value = 'Принять';
+    submit.value = 'Подтвердить';
     submit.classList.add('modal-window-submit');
     popupContent.appendChild(submit);
     return popupContent;
@@ -223,10 +223,6 @@ function showVotes(votes) {
         const previousVote = players[i].querySelector('.vote');
         if (previousVote !== null) {
             players[i].removeChild(previousVote);
-        }
-
-        if (votes[i] === null) {
-            continue;
         }
 
         const vote = document.createElement('img');

@@ -37,8 +37,13 @@ function createButton(text, ...classes) {
 function getMenuPage() {
     const div = document.createElement('div');
     div.classList.add('container');
+    const backButton = createButton('<', 'back-button');
     const findBtn = createButton('Найти игру', 'find-button');
     const createBtn = createButton('Новая игра', 'create-button');
+    backButton.addEventListener('click', async _ => {
+        changeState(document.querySelector('.container'), states.loginPage);
+    });
+    div.appendChild(backButton);
     div.appendChild(findBtn);
     div.appendChild(createBtn);
     return div;
@@ -47,6 +52,11 @@ function getMenuPage() {
 function getRoomCreationPage() {
     const div = document.createElement('div');
     div.classList.add('container');
+    const backButton = createButton('<', 'back-button');
+    div.appendChild(backButton);
+    backButton.addEventListener('click', async _ => {
+        changeState(document.querySelector('.container'), states.menuPage);
+    });
     const form = document.createElement('form');
     form.classList.add('room-creation-form');
     div.appendChild(form);
@@ -183,7 +193,7 @@ async function getListOfRoomsPage() {
     });
     backButton.addEventListener('click', async _ => {
         changeState(document.querySelector('.container'), states.menuPage);
-    })
+    });
     return div;
 }
 
