@@ -113,6 +113,12 @@ app.post('/api/createRoom', (req, res) => {
     let room = new Room(name, password, playersCount);
     rooms.set(room.id, room);
 
+    setTimeout(() => {
+        if (room.players.length === 0){
+            rooms.delete(room.id);
+        }
+    }, 5000);
+
     res.json({id: room.id});
 });
 
